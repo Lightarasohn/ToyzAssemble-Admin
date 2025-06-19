@@ -36,6 +36,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped<IToyRepository, ToyRepository>();
 builder.Services.AddScoped<IToyTypeRepository, ToyTypeRepository>();
 builder.Services.AddScoped<IPackageRepository, PackageRepository>();
+builder.Services.AddScoped<IPackageToyTypeRepository, PackageToyTypeRepository>();
 
 var app = builder.Build();
 
