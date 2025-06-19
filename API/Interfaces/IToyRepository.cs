@@ -12,7 +12,7 @@ namespace API.Interfaces
         Task<IEnumerable<Toy>> GetAllToysAsync();
         Task<Toy> GetToyByIdAsync(int id);
         Task<Toy> AddToyAsync(ToyDto toy);
-        Task<Toy> UpdateToyAsync(ToyDto toy);
+        Task<Toy> UpdateToyAsync(ToyDto toy, int id);
         Task<Toy> DeleteToyAsync(int id);
     }
 }

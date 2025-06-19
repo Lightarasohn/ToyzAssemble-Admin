@@ -15,7 +15,5 @@ namespace API.DTOs.ToyDTOs
         public int ToyTypeId { get; set; }
 
         public decimal LuckPercentage { get; set; }
-
-        public virtual ToyType ToyType { get; set; } = null!;
     }
 }
