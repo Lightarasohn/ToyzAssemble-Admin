@@ -35,7 +35,7 @@ builder.Services.AddSwaggerGen(c =>
 // Dependency injection for repositories
 builder.Services.AddScoped<IToyRepository, ToyRepository>();
 builder.Services.AddScoped<IToyTypeRepository, ToyTypeRepository>();
-
+builder.Services.AddScoped<IPackageRepository, PackageRepository>();
 
 var app = builder.Build();
 

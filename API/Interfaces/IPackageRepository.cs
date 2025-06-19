@@ -12,7 +12,7 @@ namespace API.Interfaces
         Task<IEnumerable<Package>> GetAllPackagesAsync();
         Task<Package> GetPackageByIdAsync(int id);
         Task<Package> AddPackageAsync(PackageDto package);
-        Task<Package> UpdatePackageAsync(PackageDto package);
+        Task<Package> UpdatePackageAsync(PackageDto package, int id);
         Task<Package> DeletePackageAsync(int id);
     }
 }
