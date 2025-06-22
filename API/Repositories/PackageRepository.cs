@@ -63,6 +63,8 @@ namespace API.Repositories
             {
                 var packages = await _context.Packages
                     .Include(t => t.PackageToyTypes)
+                    .ThenInclude(pt => pt.ToyType)
+                    .ThenInclude(t => t.Toys)
                     .ToListAsync();
 
                 return packages;
@@ -77,7 +79,11 @@ namespace API.Repositories
         {
             try
             {
-                var package = await _context.Packages.Include(x => x.PackageToyTypes).FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception($"Package with ID {id} not found.");
+                var package = await _context.Packages.
+                Include(x => x.PackageToyTypes)
+                .ThenInclude(pt => pt.ToyType)
+                .ThenInclude(x => x.Toys)
+                .FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception($"Package with ID {id} not found.");
                 return package;
             }
             catch (Exception ex)

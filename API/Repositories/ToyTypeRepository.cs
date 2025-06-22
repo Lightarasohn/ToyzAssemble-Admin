@@ -55,7 +55,7 @@ namespace API.Repositories
         {
             try
             {
-                var toyTypes = await _context.ToyTypes.Include(t => t.Toys).ToListAsync();
+                var toyTypes = await _context.ToyTypes.Include(t => t.Toys).Include(t => t.PackageToyTypes).ToListAsync();
                 return toyTypes;
             }
             catch (Exception ex)
@@ -68,7 +68,7 @@ namespace API.Repositories
         {
             try
             {
-                var toyType = await _context.ToyTypes.Include(t => t.Toys).FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception($"Toy type with ID {id} not found.");
+                var toyType = await _context.ToyTypes.Include(t => t.Toys).Include(t => t.PackageToyTypes).FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception($"Toy type with ID {id} not found.");
                 return toyType;
             }
             catch (Exception ex)
