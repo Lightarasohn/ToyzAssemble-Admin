@@ -9,6 +9,6 @@ namespace API.DTOs.GiveawayDTOs
     public class GiveawayPickedToyDto
     {
         public Toy Toy { get; set; } = null!;
-        public float Probability { get; set; }
+        public float Probability { get; set; } = 0f;
     }
 }
