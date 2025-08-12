@@ -12,45 +12,48 @@ namespace API.Repositories
     {
         private readonly IPackageRepository _packageRepository;
         private readonly ILogger<GiveawayRepository> _logger;
+
         public GiveawayRepository(IPackageRepository packageRepository, ILogger<GiveawayRepository> logger)
         {
             _packageRepository = packageRepository;
             _logger = logger;
         }
 
-        public PackageToyType PickToyTypeFromPackage(Package package)
+        public PackageRarityType PickRarityTypeFromPackage(Package package)
         {
-            var packageToyTypes = package.PackageToyTypes ?? throw new Exception("Package has no toy types");
+            var packageRarityTypes = package.PackageRarityTypes ?? throw new Exception("Package has no rarity types");
+            if (!packageRarityTypes.Any()) throw new Exception("Package has no rarity types");
 
-            float totalProbability = packageToyTypes.Sum(pt => (float)pt.Ratio);
-            if (totalProbability <= 0) throw new Exception("Total probability of toy types in package is zero or negative");
+            float totalProbability = packageRarityTypes.Sum(pr => (float)pr.Ratio);
+            if (totalProbability <= 0) throw new Exception("Total probability of rarity types in package is zero or negative");
 
             float ratioConvertRate = 100f / totalProbability;
             var random = new Random();
             float roll = (float)(random.NextDouble() * 100);
             float cumulative = 0f;
 
-            foreach (var pt in packageToyTypes)
+            foreach (var pr in packageRarityTypes)
             {
-            cumulative += (float)pt.Ratio * ratioConvertRate;
-            if (roll < cumulative)
-            {
-                _logger.LogInformation($"Picked toy type: {pt.ToyType} with ratio {pt.Ratio}");
-                return pt;
-            }
+                cumulative += (float)pr.Ratio * ratioConvertRate;
+                if (roll < cumulative)
+                {
+                    _logger.LogInformation($"Picked rarity type: {pr.RarityType.Name} with ratio {pr.Ratio}");
+                    return pr;
+                }
             }
 
-            // Fallback to last if none picked due to floating point errors
-            var fallback = packageToyTypes.Last();
-            _logger.LogInformation($"Picked toy type (fallback): {fallback.ToyType} with ratio {fallback.Ratio}");
+            var fallback = packageRarityTypes.Last();
+            _logger.LogInformation($"Picked rarity type (fallback): {fallback.RarityType.Name} with ratio {fallback.Ratio}");
             return fallback;
         }
 
-        public Toy PickToyFromToyType(ToyType toyType)
+        public Toy PickToyFromRarityType(RarityType rarityType)
         {
-            var toys = toyType.Toys ?? throw new Exception("Toy type has no toys");
+            var toys = rarityType.Toys ?? throw new Exception("Rarity type has no toys");
+            if (!toys.Any()) throw new Exception("Rarity type has no toys");
+
             float totalProbability = toys.Sum(t => (float)t.LuckPercentage);
-            if (totalProbability <= 0) throw new Exception("Total probability of toys in toy type is zero or negative");
+            if (totalProbability <= 0) throw new Exception("Total probability of toys in rarity type is zero or negative");
 
             float ratioConvertRate = 100f / totalProbability;
             var random = new Random();
@@ -62,38 +65,53 @@ namespace API.Repositories
                 cumulative += (float)toy.LuckPercentage * ratioConvertRate;
                 if (roll < cumulative)
                 {
+                    _logger.LogInformation($"Picked toy: {toy.Name} with luck percentage {toy.LuckPercentage}%");
                     return toy;
                 }
             }
 
-            // Fallback to last if none picked due to floating point errors
-            return toys.Last();
+            var fallback = toys.Last();
+            _logger.LogInformation($"Picked toy (fallback): {fallback.Name} with luck percentage {fallback.LuckPercentage}%");
+            return fallback;
         }
 
         public async Task<GiveawayPickedToyDto> PickToyFromPackageAsync(int packageId)
         {
             var package = await _packageRepository.GetPackageByIdAsync(packageId) ?? throw new Exception("Package not found");
-            if (package.PackageToyTypes.Count == 0) throw new Exception("Package has no toys");
+            if (package.PackageRarityTypes?.Count == 0) throw new Exception("Package has no rarity types");
 
             _logger.LogInformation($"Picking toy from package: {package.Name} (ID: {package.Id})");
 
+            var pickedRarityType = PickRarityTypeFromPackage(package);
 
-            var pickedToyType = PickToyTypeFromPackage(package);
-            // If no toys are available in the picked toy type, Then we select another toy type until we find one with toys
-            while (pickedToyType.ToyType.Toys.Count == 0)
+            int maxAttempts = 10;
+            int attempts = 0;
+
+            while (pickedRarityType.RarityType.Toys?.Count == 0 && attempts < maxAttempts)
             {
-                _logger.LogWarning($"Picked toy type {pickedToyType.ToyType} has no toys, picking another toy type");
-                pickedToyType = PickToyTypeFromPackage(package);
+                _logger.LogWarning($"Picked rarity type {pickedRarityType.RarityType.Name} has no toys, picking another rarity type (attempt {attempts + 1})");
+                pickedRarityType = PickRarityTypeFromPackage(package);
+                attempts++;
             }
 
-            _logger.LogInformation($"Picked toy type: {pickedToyType.ToyType} with ratio {pickedToyType.Ratio}");
+            if (attempts >= maxAttempts)
+            {
+                throw new Exception("Could not find a rarity type with toys after maximum attempts");
+            }
+
+            _logger.LogInformation($"Selected rarity type: {pickedRarityType.RarityType.Name} with ratio {pickedRarityType.Ratio}");
+
+            var pickedToy = PickToyFromRarityType(pickedRarityType.RarityType);
 
             
-            var pickedToy = PickToyFromToyType(pickedToyType.ToyType);
+            float rarityTypeProbability = (float)pickedRarityType.Ratio / package.PackageRarityTypes!.Sum(pr => (float)pr.Ratio);
+            float toyProbabilityInRarity = (float)pickedToy.LuckPercentage / pickedRarityType.RarityType.Toys!.Sum(t => (float)t.LuckPercentage);
+            float totalProbability = rarityTypeProbability * toyProbabilityInRarity;
+
             return new GiveawayPickedToyDto
             {
                 Toy = pickedToy,
-                Probability = (float)pickedToy.LuckPercentage / 100f
+                Probability = totalProbability
             };
         }
     }

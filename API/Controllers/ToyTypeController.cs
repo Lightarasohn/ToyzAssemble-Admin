@@ -21,6 +21,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var toyTypes = await _toyTypeRepository.GetAllToyTypesAsync();
@@ -28,13 +29,14 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var toyType = await _toyTypeRepository.GetToyTypeByIdAsync(id);
@@ -46,18 +48,14 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ToyTypeDto toyTypeDto)
         {
-            if (toyTypeDto == null)
-            {
-                return BadRequest("Toy type data is required.");
-            }
-
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var createdToyType = await _toyTypeRepository.AddToyTypeAsync(toyTypeDto);
@@ -65,18 +63,14 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ToyTypeDto toyTypeDto)
         {
-            if (toyTypeDto == null)
-            {
-                return BadRequest("Toy type data is required.");
-            }
-
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var updatedToyType = await _toyTypeRepository.UpdateToyTypeAsync(toyTypeDto, id);
@@ -88,13 +82,14 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var deletedToyType = await _toyTypeRepository.DeleteToyTypeAsync(id);
@@ -106,7 +101,7 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
     }

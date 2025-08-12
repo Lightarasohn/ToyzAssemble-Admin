@@ -18,7 +18,9 @@ public partial class PostgresContext : DbContext
 
     public virtual DbSet<Package> Packages { get; set; }
 
-    public virtual DbSet<PackageToyType> PackageToyTypes { get; set; }
+    public virtual DbSet<PackageRarityType> PackageRarityTypes { get; set; }
+
+    public virtual DbSet<RarityType> RarityTypes { get; set; }
 
     public virtual DbSet<Toy> Toys { get; set; }
 
@@ -58,25 +60,37 @@ public partial class PostgresContext : DbContext
                 .HasColumnName("price");
         });
 
-        modelBuilder.Entity<PackageToyType>(entity =>
+        modelBuilder.Entity<PackageRarityType>(entity =>
         {
-            entity.HasKey(e => new { e.PackageId, e.ToyTypeId }).HasName("package_toy_type_pkey");
+            entity.HasKey(e => new { e.PackageId, e.RarityTypeId }).HasName("package_rarity_type_pkey");
 
-            entity.ToTable("package_toy_type");
+            entity.ToTable("package_rarity_type");
 
             entity.Property(e => e.PackageId).HasColumnName("package_id");
-            entity.Property(e => e.ToyTypeId).HasColumnName("toy_type_id");
-            entity.Property(e => e.Ratio)
-                .HasPrecision(5, 2)
-                .HasColumnName("ratio");
+            entity.Property(e => e.RarityTypeId).HasColumnName("rarity_type_id");
+            entity.Property(e => e.Ratio).HasColumnName("ratio");
 
-            entity.HasOne(d => d.Package).WithMany(p => p.PackageToyTypes)
+            entity.HasOne(d => d.Package).WithMany(p => p.PackageRarityTypes)
                 .HasForeignKey(d => d.PackageId)
-                .HasConstraintName("package_toy_type_package_id_fkey");
+                .HasConstraintName("package_rarity_type_package_id_fkey");
 
-            entity.HasOne(d => d.ToyType).WithMany(p => p.PackageToyTypes)
-                .HasForeignKey(d => d.ToyTypeId)
-                .HasConstraintName("package_toy_type_toy_type_id_fkey");
+            entity.HasOne(d => d.RarityType).WithMany(p => p.PackageRarityTypes)
+                .HasForeignKey(d => d.RarityTypeId)
+                .HasConstraintName("package_rarity_type_rarity_type_id_fkey");
+        });
+
+        modelBuilder.Entity<RarityType>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("rarity_pkey");
+
+            entity.ToTable("rarity_type");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("nextval('rarity_id_seq'::regclass)")
+                .HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<Toy>(entity =>
@@ -95,7 +109,13 @@ public partial class PostgresContext : DbContext
             entity.Property(e => e.Price)
                 .HasPrecision(10, 2)
                 .HasColumnName("price");
+            entity.Property(e => e.RarityId).HasColumnName("rarity_id");
             entity.Property(e => e.ToyTypeId).HasColumnName("toy_type_id");
+
+            entity.HasOne(d => d.Rarity).WithMany(p => p.Toys)
+                .HasForeignKey(d => d.RarityId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("toy_rarity_id_fkey");
 
             entity.HasOne(d => d.ToyType).WithMany(p => p.Toys)
                 .HasForeignKey(d => d.ToyTypeId)

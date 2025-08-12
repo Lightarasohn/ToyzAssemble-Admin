@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using API.Contexts;
 using API.Interfaces;
 using API.Repositories;
@@ -12,6 +13,10 @@ builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -36,7 +41,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped<IToyRepository, ToyRepository>();
 builder.Services.AddScoped<IToyTypeRepository, ToyTypeRepository>();
 builder.Services.AddScoped<IPackageRepository, PackageRepository>();
-builder.Services.AddScoped<IPackageToyTypeRepository, PackageToyTypeRepository>();
+builder.Services.AddScoped<IPackageRarityTypeRepository, PackageRarityTypeRepository>();
 builder.Services.AddScoped<IGiveawayRepository, GiveawayRepository>();
 
 var app = builder.Build();

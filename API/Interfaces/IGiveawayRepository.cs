@@ -10,7 +10,7 @@ namespace API.Interfaces
     public interface IGiveawayRepository
     {
         Task<GiveawayPickedToyDto> PickToyFromPackageAsync(int packageId);
-        PackageToyType PickToyTypeFromPackage(Package package);
-        Toy PickToyFromToyType(ToyType toyType);
+        PackageRarityType PickRarityTypeFromPackage(Package package);
+        Toy PickToyFromRarityType(RarityType rarityType);
     }
 }

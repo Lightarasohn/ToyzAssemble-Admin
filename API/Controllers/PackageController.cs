@@ -22,6 +22,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var packages = await _packageRepository.GetAllPackagesAsync();
@@ -29,13 +30,14 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var package = await _packageRepository.GetPackageByIdAsync(id);
@@ -43,18 +45,14 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PackageDto packageDto)
         {
-            if (packageDto == null)
-            {
-                return BadRequest("Package data is required.");
-            }
-
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var newPackage = await _packageRepository.AddPackageAsync(packageDto);
@@ -62,18 +60,14 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] PackageDto packageDto)
         {
-            if (packageDto == null)
-            {
-                return BadRequest("Package data is required.");
-            }
-
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var updatedPackage = await _packageRepository.UpdatePackageAsync(packageDto, id);
@@ -81,13 +75,14 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var deletedPackage = await _packageRepository.DeletePackageAsync(id);
@@ -95,7 +90,7 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
     }

@@ -15,5 +15,9 @@ public partial class Toy
 
     public decimal LuckPercentage { get; set; }
 
+    public int RarityId { get; set; }
+
+    public virtual RarityType Rarity { get; set; } = null!;
+
     public virtual ToyType ToyType { get; set; } = null!;
 }

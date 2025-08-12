@@ -55,7 +55,7 @@ namespace API.Repositories
         {
             try
             {
-                var toy = await _context.Toys.Include(x => x.ToyType).FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception("Toy could not found in the database");
+                var toy = await _context.Toys.FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception("Toy could not found in the database");
                 _context.Remove(toy);
                 await _context.SaveChangesAsync();
                 return toy;
@@ -70,7 +70,11 @@ namespace API.Repositories
         {
             try
             {
-                var toys = await _context.Toys.Include(x => x.ToyType).ToListAsync() ?? throw new Exception("No toys found in the database.");
+                var toys = await _context.Toys
+                                .AsNoTracking()
+                                .Include(x => x.ToyType)
+                                .Include(x => x.Rarity)
+                                .ToListAsync() ?? throw new Exception("No toys found in the database.");
                 return toys;
             }
             catch (Exception ex)
@@ -83,7 +87,10 @@ namespace API.Repositories
         {
             try
             {
-                var toy = await _context.Toys.Include(x => x.ToyType).FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception($"Toy with ID {id} not found.");
+                var toy = await _context.Toys
+                                .Include(x => x.ToyType)
+                                .Include(x => x.Rarity)
+                                .FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception($"Toy with ID {id} not found.");
                 return toy;
             }
             catch (Exception ex)
@@ -96,7 +103,10 @@ namespace API.Repositories
         {
             try
             {
-                var foundToy = await _context.Toys.Include(x => x.ToyType).FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception("Toy could not found in the database");
+                var foundToy = await _context.Toys
+                                .Include(x => x.ToyType)
+                                .Include(x => x.Rarity)
+                                .FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception("Toy could not found in the database");
                 foundToy.LuckPercentage = toy.LuckPercentage;
                 foundToy.Name = toy.Name;
                 foundToy.Price = toy.Price;

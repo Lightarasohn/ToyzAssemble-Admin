@@ -2,19 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API.DTOs.PackageToyTypeDTOs;
+using API.DTOs.PackageRarityTypeDTOs;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [ApiController]
-    [Route("api/packageToyType")]
-    public class PackageToyTypeController : ControllerBase
+    [Route("api/packageRarityType")]
+    public class PackageRarityTypeController : ControllerBase
     {
-        private readonly IPackageToyTypeRepository _repository;
+        private readonly IPackageRarityTypeRepository _repository;
 
-        public PackageToyTypeController(IPackageToyTypeRepository repository)
+        public PackageRarityTypeController(IPackageRarityTypeRepository repository)
         {
             _repository = repository;
         }
@@ -22,104 +22,108 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var packageToyTypes = await _repository.GetAllPackageToyTypesAsync();
-                return Ok(packageToyTypes);
+                var packageRarityTypes = await _repository.GetAllPackageRarityTypesAsync();
+                return Ok(packageRarityTypes);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet("package/{id}")]
         public async Task<IActionResult> GetByPackageId(int id)
         {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var packageToyTypes = await _repository.GetAllPackageToyTypeByPackageIdAsync(id);
-                return Ok(packageToyTypes);
+                var packageRarityTypes = await _repository.GetAllPackageRarityTypeByPackageIdAsync(id);
+                return Ok(packageRarityTypes);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
-        [HttpGet("toyType/{id}")]
-        public async Task<IActionResult> GetByToyTypeId(int id)
+        [HttpGet("rarityType/{id}")]
+        public async Task<IActionResult> GetByRarityTypeId(int id)
         {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var packageToyTypes = await _repository.GetAllPackageToyTypeByToyTypeIdAsync(id);
-                return Ok(packageToyTypes);
+                var packageRarityTypes = await _repository.GetAllPackageRarityTypeByRarityTypeIdAsync(id);
+                return Ok(packageRarityTypes);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
-        [HttpGet("{packageId}/{toyTypeId}")]
-        public async Task<IActionResult> GetById(int packageId, int toyTypeId)
+        [HttpGet("{packageId}/{rarityTypeId}")]
+        public async Task<IActionResult> GetById(int packageId, int rarityTypeId)
         {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var packageToyType = await _repository.GetPackageToyTypeByIdAsync(packageId, toyTypeId);
-                return Ok(packageToyType);
+                var packageRarityType = await _repository.GetPackageRarityTypeByIdAsync(packageId, rarityTypeId);
+                return Ok(packageRarityType);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] PackageToyTypeDto packageToyTypeDto)
+        public async Task<IActionResult> Create([FromBody] PackageRarityTypeDto packageRarityTypeDto)
         {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var packageToyType = await _repository.AddPackageToyTypeAsync(packageToyTypeDto);
-                return CreatedAtAction(nameof(GetById), new { packageId = packageToyType.PackageId, toyTypeId = packageToyType.ToyTypeId }, packageToyType);
+                var packageRarityType = await _repository.AddPackageRarityTypeAsync(packageRarityTypeDto);
+                return CreatedAtAction(nameof(GetById), 
+                    new { packageId = packageRarityType.PackageId, rarityTypeId = packageRarityType.RarityTypeId }, 
+                    packageRarityType);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
-        [HttpPut("{packageId}/{toyTypeId}")]
-        public async Task<IActionResult> Update(int packageId, int toyTypeId, [FromBody] PackageToyTypeDto packageToyTypeDto)
+        [HttpPut("{packageId}/{rarityTypeId}")]
+        public async Task<IActionResult> Update(int packageId, int rarityTypeId, [FromBody] PackageRarityTypeDto packageRarityTypeDto)
         {
-            if (packageToyTypeDto == null)
-            {
-                return BadRequest("PackageToyType data is required.");
-            }
-
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var updatedPackageToyType = await _repository.UpdatePackageToyTypeAsync(packageToyTypeDto, packageId, toyTypeId);
-                return Ok(updatedPackageToyType);
+                var updatedPackageRarityType = await _repository.UpdatePackageRarityTypeAsync(packageRarityTypeDto, packageId, rarityTypeId);
+                return Ok(updatedPackageRarityType);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
-        [HttpDelete("{packageId}/{toyTypeId}")]
-        public async Task<IActionResult> Delete(int packageId, int toyTypeId)
+        [HttpDelete("{packageId}/{rarityTypeId}")]
+        public async Task<IActionResult> Delete(int packageId, int rarityTypeId)
         {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var deletedPackageToyType = await _repository.DeletePackageToyTypeAsync(packageId, toyTypeId);
-                return Ok(deletedPackageToyType);
+                var deletedPackageRarityType = await _repository.DeletePackageRarityTypeAsync(packageId, rarityTypeId);
+                return Ok(deletedPackageRarityType);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
-        } 
+        }
     }
 }
