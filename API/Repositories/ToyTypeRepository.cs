@@ -19,8 +19,7 @@ namespace API.Repositories
         }
         public async Task<ToyType> AddToyTypeAsync(ToyTypeDto toyType)
         {
-            try
-            {
+            
                 var newToyType = new ToyType
                 {
                     Name = toyType.Name,
@@ -29,68 +28,55 @@ namespace API.Repositories
                 var addedToyType = await _context.ToyTypes.AddAsync(newToyType);
                 await _context.SaveChangesAsync();
                 return addedToyType.Entity;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while adding the toy type.", ex);
-            }
+            
         }
 
         public async Task<ToyType> DeleteToyTypeAsync(int id)
         {
-            try
-            {
-                var toyType = await _context.ToyTypes.Include(t => t.Toys).FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception($"Toy type with ID {id} not found.");
-                _context.ToyTypes.Remove(toyType);
+
+                var toyType = await _context.ToyTypes.Include(t => t.Toys).FirstOrDefaultAsync(t => t.Id == id && t.Deleted == false) ?? throw new Exception($"Toy type with ID {id} not found.");
+                toyType.Deleted = true;
                 await _context.SaveChangesAsync();
                 return toyType;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while deleting the toy type.", ex);
-            }
+            
         }
 
         public async Task<IEnumerable<ToyType>> GetAllToyTypesAsync()
         {
-            try
-            {
-                var toyTypes = await _context.ToyTypes.Include(t => t.Toys).ToListAsync();
+
+                var toyTypes = await _context.ToyTypes
+                                    .AsNoTracking()
+                                    .Include(t => t.Toys)
+                                    .Where(t => t.Deleted == false)
+                                    .ToListAsync();
                 return toyTypes;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while retrieving toy types.", ex);
-            }
+            
         }
 
         public async Task<ToyType> GetToyTypeByIdAsync(int id)
         {
-            try
-            {
-                var toyType = await _context.ToyTypes.Include(t => t.Toys).FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception($"Toy type with ID {id} not found.");
+
+                var toyType = await _context.ToyTypes
+                    .AsNoTracking()
+                    .Include(t => t.Toys)
+                    .FirstOrDefaultAsync(t => t.Id == id && t.Deleted == false)
+                    ?? throw new Exception($"Toy type with ID {id} not found.");
                 return toyType;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while retrieving the toy type.", ex);
-            }
+            
         }
 
         public async Task<ToyType> UpdateToyTypeAsync(ToyTypeDto toyType, int id)
         {
-            try
-            {
-                var foundToyType = await _context.ToyTypes.Include(t => t.Toys).FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception($"Toy type with ID {id} not found.");
+            
+                var foundToyType = await _context.ToyTypes
+                    .Include(t => t.Toys)
+                    .FirstOrDefaultAsync(t => t.Id == id && t.Deleted == false)
+                    ?? throw new Exception($"Toy type with ID {id} not found.");
 
                 foundToyType.Name = toyType.Name;
                 await _context.SaveChangesAsync();
                 return foundToyType;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while updating the toy type.", ex);
-            }
+            
         }
     }
 }

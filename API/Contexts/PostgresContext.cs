@@ -52,6 +52,9 @@ public partial class PostgresContext : DbContext
             entity.ToTable("package");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Deleted)
+                .HasDefaultValue(false)
+                .HasColumnName("deleted");
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .HasColumnName("name");
@@ -68,6 +71,9 @@ public partial class PostgresContext : DbContext
 
             entity.Property(e => e.PackageId).HasColumnName("package_id");
             entity.Property(e => e.RarityTypeId).HasColumnName("rarity_type_id");
+            entity.Property(e => e.Deleted)
+                .HasDefaultValue(false)
+                .HasColumnName("deleted");
             entity.Property(e => e.Ratio).HasColumnName("ratio");
 
             entity.HasOne(d => d.Package).WithMany(p => p.PackageRarityTypes)
@@ -88,6 +94,9 @@ public partial class PostgresContext : DbContext
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("nextval('rarity_id_seq'::regclass)")
                 .HasColumnName("id");
+            entity.Property(e => e.Deleted)
+                .HasDefaultValue(false)
+                .HasColumnName("deleted");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
@@ -100,6 +109,9 @@ public partial class PostgresContext : DbContext
             entity.ToTable("toy");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Deleted)
+                .HasDefaultValue(false)
+                .HasColumnName("deleted");
             entity.Property(e => e.LuckPercentage)
                 .HasPrecision(5, 2)
                 .HasColumnName("luck_percentage");
@@ -130,6 +142,9 @@ public partial class PostgresContext : DbContext
             entity.ToTable("toy_type");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Deleted)
+                .HasDefaultValue(false)
+                .HasColumnName("deleted");
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .HasColumnName("name");

@@ -11,6 +11,8 @@ public partial class PackageRarityType
 
     public double Ratio { get; set; }
 
+    public bool Deleted { get; set; }
+
     public virtual Package Package { get; set; } = null!;
 
     public virtual RarityType RarityType { get; set; } = null!;

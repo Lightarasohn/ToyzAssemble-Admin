@@ -11,5 +11,7 @@ public partial class Package
 
     public decimal Price { get; set; }
 
+    public bool Deleted { get; set; }
+
     public virtual ICollection<PackageRarityType> PackageRarityTypes { get; set; } = new List<PackageRarityType>();
 }

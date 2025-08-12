@@ -47,7 +47,7 @@ namespace API.Repositories
                 RarityType = rarityType
             };
 
-            _context.PackageRarityTypes.Add(newPackageRarityType);
+            await _context.PackageRarityTypes.AddAsync(newPackageRarityType);
             await _context.SaveChangesAsync();
 
             return newPackageRarityType;
@@ -62,7 +62,7 @@ namespace API.Repositories
                     .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId)
                     ?? throw new Exception($"Package rarity type with PackageId {packageId} and RarityTypeId {rarityTypeId} not found.");
 
-                _context.PackageRarityTypes.Remove(packageRarityType);
+                packageRarityType.Deleted = true;
                 await _context.SaveChangesAsync();
 
                 return packageRarityType;
@@ -73,9 +73,10 @@ namespace API.Repositories
         {
             
                 var packageRarityTypes = await _context.PackageRarityTypes
+                    .AsNoTracking()
                     .Include(pr => pr.Package)
                     .Include(pr => pr.RarityType)
-                    .Where(pr => pr.PackageId == id)
+                    .Where(pr => pr.PackageId == id && pr.Deleted == false)
                     .ToListAsync();
 
                 return packageRarityTypes;
@@ -86,9 +87,10 @@ namespace API.Repositories
         {
             
                 var packageRarityTypes = await _context.PackageRarityTypes
+                    .AsNoTracking()
                     .Include(pr => pr.Package)
                     .Include(pr => pr.RarityType)
-                    .Where(pr => pr.RarityTypeId == id)
+                    .Where(pr => pr.RarityTypeId == id && pr.Deleted == false)
                     .ToListAsync();
 
                 return packageRarityTypes;
@@ -98,8 +100,10 @@ namespace API.Repositories
         {
             
                 var packageRarityTypes = await _context.PackageRarityTypes
+                    .AsNoTracking()
                     .Include(pr => pr.Package)
                     .Include(pr => pr.RarityType)
+                    .Where(pr => pr.Deleted == false)
                     .ToListAsync();
                 
                 return packageRarityTypes;
@@ -110,9 +114,10 @@ namespace API.Repositories
         {
             
                 var packageRarityType = await _context.PackageRarityTypes
+                    .AsNoTracking()
                     .Include(pr => pr.Package)
                     .Include(pr => pr.RarityType)
-                    .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId)
+                    .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId && pr.Deleted == false)
                     ?? throw new Exception($"Package rarity type with PackageId {packageId} and RarityTypeId {rarityTypeId} not found.");
 
                 return packageRarityType;
@@ -125,7 +130,7 @@ namespace API.Repositories
                 var packageRarityTypeToUpdate = await _context.PackageRarityTypes
                     .Include(pr => pr.Package)
                     .Include(pr => pr.RarityType)
-                    .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId)
+                    .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId && pr.Deleted == false)
                     ?? throw new Exception($"Package rarity type with PackageId {packageId} and RarityTypeId {rarityTypeId} not found.");
 
                 // If the new IDs are different from current ones, validate they exist

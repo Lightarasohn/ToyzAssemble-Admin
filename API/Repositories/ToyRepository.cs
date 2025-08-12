@@ -21,8 +21,7 @@ namespace API.Repositories
 
         public async Task<Toy> AddToyAsync(ToyDto toy)
         {
-            try
-            {
+            
                 var newToy = new Toy
                 {
                     Name = toy.Name,
@@ -43,69 +42,53 @@ namespace API.Repositories
                 var addedToy = await _context.AddAsync(newToy);
                 await _context.SaveChangesAsync();
                 return addedToy.Entity;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while retrieving toys.", ex);
-            }
+            
         }
 
 
         public async Task<Toy> DeleteToyAsync(int id)
         {
-            try
-            {
-                var toy = await _context.Toys.FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception("Toy could not found in the database");
-                _context.Remove(toy);
+            
+                var toy = await _context.Toys.FirstOrDefaultAsync(t => t.Id == id && t.Deleted == false) ?? throw new Exception("Toy could not found in the database");
+                toy.Deleted = true;
                 await _context.SaveChangesAsync();
                 return toy;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while retrieving toys.", ex);
-            }
+            
         }
 
         public async Task<IEnumerable<Toy>> GetAllToysAsync()
         {
-            try
-            {
+            
                 var toys = await _context.Toys
                                 .AsNoTracking()
                                 .Include(x => x.ToyType)
                                 .Include(x => x.Rarity)
+                                .Where(t => t.Deleted == false)
                                 .ToListAsync() ?? throw new Exception("No toys found in the database.");
                 return toys;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while retrieving toys.", ex);
-            }
+           
         }
 
         public async Task<Toy> GetToyByIdAsync(int id)
         {
-            try
-            {
+            
                 var toy = await _context.Toys
+                                .AsNoTracking()
                                 .Include(x => x.ToyType)
                                 .Include(x => x.Rarity)
+                                .Where(t => t.Deleted == false)
                                 .FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception($"Toy with ID {id} not found.");
                 return toy;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while retrieving the toy.", ex);
-            }
+            
         }
 
         public async Task<Toy> UpdateToyAsync(ToyDto toy, int id)
         {
-            try
-            {
+           
                 var foundToy = await _context.Toys
                                 .Include(x => x.ToyType)
                                 .Include(x => x.Rarity)
+                                .Where(t => t.Deleted == false)
                                 .FirstOrDefaultAsync(t => t.Id == id) ?? throw new Exception("Toy could not found in the database");
                 foundToy.LuckPercentage = toy.LuckPercentage;
                 foundToy.Name = toy.Name;
@@ -118,11 +101,6 @@ namespace API.Repositories
                 }
                 await _context.SaveChangesAsync();
                 return foundToy;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while retrieving toys.", ex);
-            }
         }
     }
 }

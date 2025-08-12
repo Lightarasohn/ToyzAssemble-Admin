@@ -9,5 +9,7 @@ public partial class ToyType
 
     public string Name { get; set; } = null!;
 
+    public bool Deleted { get; set; }
+
     public virtual ICollection<Toy> Toys { get; set; } = new List<Toy>();
 }

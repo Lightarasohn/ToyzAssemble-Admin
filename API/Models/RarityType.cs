@@ -9,6 +9,8 @@ public partial class RarityType
 
     public string Name { get; set; } = null!;
 
+    public bool Deleted { get; set; }
+
     public virtual ICollection<PackageRarityType> PackageRarityTypes { get; set; } = new List<PackageRarityType>();
 
     public virtual ICollection<Toy> Toys { get; set; } = new List<Toy>();

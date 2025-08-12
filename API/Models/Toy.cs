@@ -17,6 +17,8 @@ public partial class Toy
 
     public int RarityId { get; set; }
 
+    public bool Deleted { get; set; }
+
     public virtual RarityType Rarity { get; set; } = null!;
 
     public virtual ToyType ToyType { get; set; } = null!;

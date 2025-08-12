@@ -36,12 +36,10 @@ namespace API.Repositories
         public async Task<Package> DeletePackageAsync(int id)
         {
             
-                var package = await _context.Packages.Include(p => p.PackageRarityTypes).FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception($"Package with ID {id} not found.");
-                if (package.PackageRarityTypes != null && package.PackageRarityTypes.Any())
-                {
-                    _context.RarityTypes.RemoveRange(package.PackageRarityTypes.Select(pr => pr.RarityType));
-                }
-                _context.Packages.Remove(package);
+                var package = await _context.Packages
+                                    .Include(p => p.PackageRarityTypes)
+                                    .FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false) ?? throw new Exception($"Package with ID {id} not found.");
+                package.Deleted = true;
                 await _context.SaveChangesAsync();
                 return package;
            
@@ -51,6 +49,8 @@ namespace API.Repositories
         {
             
                 var packages = await _context.Packages
+                    .AsNoTracking()
+                    .Where(p => p.Deleted == false)
                     .Include(t => t.PackageRarityTypes)
                     .ThenInclude(pt => pt.RarityType)
                     .ThenInclude(t => t.Toys)
@@ -63,11 +63,12 @@ namespace API.Repositories
         public async Task<Package> GetPackageByIdAsync(int id)
         {
             
-                var package = await _context.Packages.
-                Include(x => x.PackageRarityTypes)
+                var package = await _context.Packages
+                .AsNoTracking()
+                .Include(x => x.PackageRarityTypes)
                 .ThenInclude(pt => pt.RarityType)
                 .ThenInclude(x => x.Toys)
-                .FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception($"Package with ID {id} not found.");
+                .FirstOrDefaultAsync(x => x.Id == id && x.Deleted == false) ?? throw new Exception($"Package with ID {id} not found.");
                 return package;
            
         }
@@ -75,7 +76,9 @@ namespace API.Repositories
         public async Task<Package> UpdatePackageAsync(PackageDto package, int id)
         {
             
-                var packageToUpdate = await _context.Packages.Include(x => x.PackageRarityTypes).FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception($"Package with ID {id} not found.");
+                var packageToUpdate = await _context.Packages
+                    .Include(x => x.PackageRarityTypes)
+                    .FirstOrDefaultAsync(x => x.Id == id && x.Deleted == false) ?? throw new Exception($"Package with ID {id} not found.");
 
                 packageToUpdate.Name = package.Name;
                 packageToUpdate.Price = package.Price;
