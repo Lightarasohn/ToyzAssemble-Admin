@@ -32,5 +32,19 @@ namespace API.Mappers
                 RarityId = toyDto.RarityId
             };
         }
+
+        public static ToyRandomDto ToRandomDto(this Toy toy)
+        {
+            return new ToyRandomDto
+            {
+                Id = toy.Id,
+                Name = toy.Name,
+                Price = toy.Price,
+                LuckPercentage = toy.LuckPercentage,
+                ToyTypeId = toy.ToyTypeId,
+                RarityId = toy.RarityId,
+                Deleted = toy.Deleted
+            };
+        }
     }
 }
