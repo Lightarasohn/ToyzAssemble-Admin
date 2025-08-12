@@ -1,0 +1,191 @@
+@BASE_URL = https://localhost:1372/api
+
+### PACKAGE CONTROLLER ###
+
+# Get all packages
+GET {{BASE_URL}}/package
+Accept: application/json
+
+###
+
+# Get package by ID
+GET {{BASE_URL}}/package/1
+Accept: application/json
+
+###
+
+# Create package
+POST {{BASE_URL}}/package
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Starter Pack",
+  "description": "First package description",
+  "price": 29.99
+}
+
+###
+
+# Update package
+PUT {{BASE_URL}}/package/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Updated Starter Pack",
+  "description": "Updated description",
+  "price": 34.99
+}
+
+###
+
+# Delete package
+DELETE {{BASE_URL}}/package/1
+Accept: application/json
+
+
+### PACKAGE RARITY TYPE CONTROLLER ###
+
+# Get all package rarity types
+GET {{BASE_URL}}/packageRarityType
+Accept: application/json
+
+###
+
+# Get by package ID
+GET {{BASE_URL}}/packageRarityType/package/1
+Accept: application/json
+
+###
+
+# Get by rarity type ID
+GET {{BASE_URL}}/packageRarityType/rarityType/1
+Accept: application/json
+
+###
+
+# Get by composite key (packageId + rarityTypeId)
+GET {{BASE_URL}}/packageRarityType/1/1
+Accept: application/json
+
+###
+
+# Create package rarity type
+POST {{BASE_URL}}/packageRarityType/1/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "quantity": 5
+}
+
+###
+
+# Update package rarity type
+PUT {{BASE_URL}}/packageRarityType/1/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "quantity": 10
+}
+
+###
+
+# Delete package rarity type
+DELETE {{BASE_URL}}/packageRarityType/1/1
+Accept: application/json
+
+
+### RANDOM TOY CONTROLLER ###
+
+# Get random toy from package
+GET {{BASE_URL}}/random-toy/1
+Accept: application/json
+
+
+### TOY CONTROLLER ###
+
+# Get all toys
+GET {{BASE_URL}}/toy
+Accept: application/json
+
+###
+
+# Get toy by ID
+GET {{BASE_URL}}/toy/1
+Accept: application/json
+
+###
+
+# Create toy
+POST {{BASE_URL}}/toy
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Super Car",
+  "toyTypeId": 1,
+  "rarityId": 1
+}
+
+###
+
+# Update toy
+PUT {{BASE_URL}}/toy/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Updated Super Car",
+  "toyTypeId": 1,
+  "rarityId": 2
+}
+
+###
+
+# Delete toy
+DELETE {{BASE_URL}}/toy/1
+Accept: application/json
+
+
+### TOY TYPE CONTROLLER ###
+
+# Get all toy types
+GET {{BASE_URL}}/toytype
+Accept: application/json
+
+###
+
+# Get toy type by ID
+GET {{BASE_URL}}/toytype/1
+Accept: application/json
+
+###
+
+# Create toy type
+POST {{BASE_URL}}/toytype
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Vehicle"
+}
+
+###
+
+# Update toy type
+PUT {{BASE_URL}}/toytype/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Updated Vehicle"
+}
+
+###
+
+# Delete toy type
+DELETE {{BASE_URL}}/toytype/1
+Accept: application/json

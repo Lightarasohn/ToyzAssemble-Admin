@@ -8,6 +8,10 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.WebHost.ConfigureKestrel((context, options) =>
+{
+    options.Configure(context.Configuration.GetSection("Kestrel"));
+});
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
@@ -45,6 +49,17 @@ builder.Services.AddScoped<IPackageRarityTypeRepository, PackageRarityTypeReposi
 builder.Services.AddScoped<IGiveawayRepository, GiveawayRepository>();
 builder.Services.AddScoped<IRarityTypeRepository, RarityTypeRepository>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhostClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // Buraya izin vermek istediğin adresi yaz
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -61,6 +76,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowLocalhostClient");
+
+app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();
