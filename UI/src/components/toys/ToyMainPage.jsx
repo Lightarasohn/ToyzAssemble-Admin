@@ -1,7 +1,9 @@
+import ToyList from "./ToyList";
+
 const ToyMainPage = () => {
     return(
     <div>
-        <div>header</div>
+        <ToyList></ToyList>
     </div>
     );
 }
