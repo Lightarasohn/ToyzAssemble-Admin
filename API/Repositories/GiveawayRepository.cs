@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs.GiveawayDTOs;
 using API.Interfaces;
+using API.Mappers;
 using API.Models;
 
 namespace API.Repositories
@@ -102,15 +103,15 @@ namespace API.Repositories
             _logger.LogInformation($"Selected rarity type: {pickedRarityType.RarityType.Name} with ratio {pickedRarityType.Ratio}");
 
             var pickedToy = PickToyFromRarityType(pickedRarityType.RarityType);
-
+            var pickedToyDto = pickedToy.ToRandomDto();
 
             float rarityTypeProbability = (float)pickedRarityType.Ratio / package.PackageRarityTypes!.Sum(pr => (float)pr.Ratio);
             float toyProbabilityInRarity = (float)pickedToy.LuckPercentage / pickedRarityType.RarityType.Toys!.Sum(t => (float)t.LuckPercentage);
-            float totalProbability = rarityTypeProbability * toyProbabilityInRarity;
+            float totalProbability = rarityTypeProbability * toyProbabilityInRarity * 100f;
 
             return new GiveawayPickedToyDto
             {
-                Toy = pickedToy,
+                Toy = pickedToyDto,
                 Probability = totalProbability
             };
         }
