@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.Contexts;
 using API.DTOs.PackageRarityTypeDTOs;
 using API.Interfaces;
+using API.Mappers;
 using API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,33 +20,26 @@ namespace API.Repositories
             _context = context;
         }
 
-        public async Task<PackageRarityType> AddPackageRarityTypeAsync(PackageRarityTypeDto packageRarityType)
+        public async Task<PackageRarityType> AddPackageRarityTypeAsync(PackageRarityTypeDto packageRarityType, int packageId, int rarityTypeId)
         {
 
-            var rarityType = await _context.RarityTypes.FirstOrDefaultAsync(r => r.Id == packageRarityType.RarityTypeId)
-                ?? throw new Exception($"Rarity type with ID {packageRarityType.RarityTypeId} not found.");
+            var rarityType = await _context.RarityTypes.FirstOrDefaultAsync(r => r.Id == rarityTypeId)
+                ?? throw new Exception($"Rarity type with ID {rarityTypeId} not found.");
 
-            var package = await _context.Packages.FirstOrDefaultAsync(p => p.Id == packageRarityType.PackageId)
-                ?? throw new Exception($"Package with ID {packageRarityType.PackageId} not found.");
+            var package = await _context.Packages.FirstOrDefaultAsync(p => p.Id == packageId)
+                ?? throw new Exception($"Package with ID {packageId} not found.");
 
             // Check if the combination already exists
             var existingPackageRarityType = await _context.PackageRarityTypes
-                .FirstOrDefaultAsync(pr => pr.PackageId == packageRarityType.PackageId &&
-                                          pr.RarityTypeId == packageRarityType.RarityTypeId);
+                .FirstOrDefaultAsync(pr => pr.PackageId == packageId &&
+                                          pr.RarityTypeId == rarityTypeId);
 
             if (existingPackageRarityType != null)
             {
-                throw new Exception($"Package rarity type with PackageId {packageRarityType.PackageId} and RarityTypeId {packageRarityType.RarityTypeId} already exists.");
+                throw new Exception($"Package rarity type with PackageId {packageId} and RarityTypeId {rarityTypeId} already exists.");
             }
 
-            var newPackageRarityType = new PackageRarityType
-            {
-                PackageId = packageRarityType.PackageId,
-                RarityTypeId = packageRarityType.RarityTypeId,
-                Ratio = packageRarityType.Ratio,
-                Package = package,
-                RarityType = rarityType
-            };
+            var newPackageRarityType = packageRarityType.ToModel(packageId: packageId, rarityTypeId: rarityTypeId);
 
             await _context.PackageRarityTypes.AddAsync(newPackageRarityType);
             await _context.SaveChangesAsync();
@@ -55,109 +49,87 @@ namespace API.Repositories
 
         public async Task<PackageRarityType> DeletePackageRarityTypeAsync(int packageId, int rarityTypeId)
         {
-            
-                var packageRarityType = await _context.PackageRarityTypes
-                    .Include(pr => pr.Package)
-                    .Include(pr => pr.RarityType)
-                    .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId)
-                    ?? throw new Exception($"Package rarity type with PackageId {packageId} and RarityTypeId {rarityTypeId} not found.");
 
-                packageRarityType.Deleted = true;
-                await _context.SaveChangesAsync();
+            var packageRarityType = await _context.PackageRarityTypes
+                .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId)
+                ?? throw new Exception($"Package rarity type with PackageId {packageId} and RarityTypeId {rarityTypeId} not found.");
 
-                return packageRarityType;
-            
+            packageRarityType.Deleted = true;
+            await _context.SaveChangesAsync();
+
+            return packageRarityType;
+
         }
 
         public async Task<IEnumerable<PackageRarityType>> GetAllPackageRarityTypeByPackageIdAsync(int id)
         {
-            
-                var packageRarityTypes = await _context.PackageRarityTypes
-                    .AsNoTracking()
-                    .Include(pr => pr.Package)
-                    .Include(pr => pr.RarityType)
-                    .Where(pr => pr.PackageId == id && pr.Deleted == false)
-                    .ToListAsync();
 
-                return packageRarityTypes;
-            
+            var packageRarityTypes = await _context.PackageRarityTypes
+                .AsNoTracking()
+                .Include(pr => pr.Package)
+                .Include(pr => pr.RarityType)
+                .Where(pr => pr.PackageId == id && pr.Deleted == false)
+                .ToListAsync();
+
+            return packageRarityTypes;
+
         }
 
         public async Task<IEnumerable<PackageRarityType>> GetAllPackageRarityTypeByRarityTypeIdAsync(int id)
         {
-            
-                var packageRarityTypes = await _context.PackageRarityTypes
-                    .AsNoTracking()
-                    .Include(pr => pr.Package)
-                    .Include(pr => pr.RarityType)
-                    .Where(pr => pr.RarityTypeId == id && pr.Deleted == false)
-                    .ToListAsync();
 
-                return packageRarityTypes;
+            var packageRarityTypes = await _context.PackageRarityTypes
+                .AsNoTracking()
+                .Include(pr => pr.Package)
+                .Include(pr => pr.RarityType)
+                .Where(pr => pr.RarityTypeId == id && pr.Deleted == false)
+                .ToListAsync();
+
+            return packageRarityTypes;
         }
 
         public async Task<IEnumerable<PackageRarityType>> GetAllPackageRarityTypesAsync()
         {
-            
-                var packageRarityTypes = await _context.PackageRarityTypes
-                    .AsNoTracking()
-                    .Include(pr => pr.Package)
-                    .Include(pr => pr.RarityType)
-                    .Where(pr => pr.Deleted == false)
-                    .ToListAsync();
-                
-                return packageRarityTypes;
-            
+
+            var packageRarityTypes = await _context.PackageRarityTypes
+                .AsNoTracking()
+                .Include(pr => pr.Package)
+                .Include(pr => pr.RarityType)
+                .Where(pr => pr.Deleted == false)
+                .ToListAsync();
+
+            return packageRarityTypes;
+
         }
 
         public async Task<PackageRarityType> GetPackageRarityTypeByIdAsync(int packageId, int rarityTypeId)
         {
-            
-                var packageRarityType = await _context.PackageRarityTypes
-                    .AsNoTracking()
-                    .Include(pr => pr.Package)
-                    .Include(pr => pr.RarityType)
-                    .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId && pr.Deleted == false)
-                    ?? throw new Exception($"Package rarity type with PackageId {packageId} and RarityTypeId {rarityTypeId} not found.");
 
-                return packageRarityType;
-            
+            var packageRarityType = await _context.PackageRarityTypes
+                .AsNoTracking()
+                .Include(pr => pr.Package)
+                .Include(pr => pr.RarityType)
+                .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId && pr.Deleted == false)
+                ?? throw new Exception($"Package rarity type with PackageId {packageId} and RarityTypeId {rarityTypeId} not found.");
+
+            return packageRarityType;
+
         }
 
         public async Task<PackageRarityType> UpdatePackageRarityTypeAsync(PackageRarityTypeDto packageRarityType, int packageId, int rarityTypeId)
         {
-            
-                var packageRarityTypeToUpdate = await _context.PackageRarityTypes
-                    .Include(pr => pr.Package)
-                    .Include(pr => pr.RarityType)
-                    .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId && pr.Deleted == false)
-                    ?? throw new Exception($"Package rarity type with PackageId {packageId} and RarityTypeId {rarityTypeId} not found.");
 
-                // If the new IDs are different from current ones, validate they exist
-                if (packageRarityType.RarityTypeId != rarityTypeId)
-                {
-                    var newRarityType = await _context.RarityTypes.FirstOrDefaultAsync(r => r.Id == packageRarityType.RarityTypeId)
-                        ?? throw new Exception($"Rarity type with ID {packageRarityType.RarityTypeId} not found.");
-                    packageRarityTypeToUpdate.RarityType = newRarityType;
-                    packageRarityTypeToUpdate.RarityTypeId = packageRarityType.RarityTypeId;
-                }
+            var packageRarityTypeToUpdate = await _context.PackageRarityTypes
+                .Include(pr => pr.Package)
+                .Include(pr => pr.RarityType)
+                .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId && pr.Deleted == false)
+                ?? throw new Exception($"Package rarity type with PackageId {packageId} and RarityTypeId {rarityTypeId} not found.");
 
-                if (packageRarityType.PackageId != packageId)
-                {
-                    var newPackage = await _context.Packages.FirstOrDefaultAsync(p => p.Id == packageRarityType.PackageId)
-                        ?? throw new Exception($"Package with ID {packageRarityType.PackageId} not found.");
-                    packageRarityTypeToUpdate.Package = newPackage;
-                    packageRarityTypeToUpdate.PackageId = packageRarityType.PackageId;
-                }
+            packageRarityTypeToUpdate.Ratio = packageRarityType.Ratio;
+            await _context.SaveChangesAsync();
 
-                // Update the ratio
-                packageRarityTypeToUpdate.Ratio = packageRarityType.Ratio;
+            return packageRarityTypeToUpdate;
 
-                _context.PackageRarityTypes.Update(packageRarityTypeToUpdate);
-                await _context.SaveChangesAsync();
-
-                return packageRarityTypeToUpdate;
-           
         }
     }
 }

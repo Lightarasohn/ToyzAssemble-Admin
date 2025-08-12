@@ -103,7 +103,7 @@ namespace API.Repositories
 
             var pickedToy = PickToyFromRarityType(pickedRarityType.RarityType);
 
-            
+
             float rarityTypeProbability = (float)pickedRarityType.Ratio / package.PackageRarityTypes!.Sum(pr => (float)pr.Ratio);
             float toyProbabilityInRarity = (float)pickedToy.LuckPercentage / pickedRarityType.RarityType.Toys!.Sum(t => (float)t.LuckPercentage);
             float totalProbability = rarityTypeProbability * toyProbabilityInRarity;

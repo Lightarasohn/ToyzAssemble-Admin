@@ -43,6 +43,7 @@ builder.Services.AddScoped<IToyTypeRepository, ToyTypeRepository>();
 builder.Services.AddScoped<IPackageRepository, PackageRepository>();
 builder.Services.AddScoped<IPackageRarityTypeRepository, PackageRarityTypeRepository>();
 builder.Services.AddScoped<IGiveawayRepository, GiveawayRepository>();
+builder.Services.AddScoped<IRarityTypeRepository, RarityTypeRepository>();
 
 var app = builder.Build();
 

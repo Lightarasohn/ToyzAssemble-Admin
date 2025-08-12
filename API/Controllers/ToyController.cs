@@ -23,7 +23,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var toys = await _toyRepository.GetAllToysAsync();
@@ -72,7 +72,7 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var deletedToy = await _toyRepository.DeleteToyAsync(id);
@@ -90,7 +90,7 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ToyDto toyDto)
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var updatedToy = await _toyRepository.UpdateToyAsync(toyDto, id);

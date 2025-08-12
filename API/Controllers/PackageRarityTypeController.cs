@@ -22,7 +22,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var packageRarityTypes = await _repository.GetAllPackageRarityTypesAsync();
@@ -37,7 +37,7 @@ namespace API.Controllers
         [HttpGet("package/{id}")]
         public async Task<IActionResult> GetByPackageId(int id)
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var packageRarityTypes = await _repository.GetAllPackageRarityTypeByPackageIdAsync(id);
@@ -52,7 +52,7 @@ namespace API.Controllers
         [HttpGet("rarityType/{id}")]
         public async Task<IActionResult> GetByRarityTypeId(int id)
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var packageRarityTypes = await _repository.GetAllPackageRarityTypeByRarityTypeIdAsync(id);
@@ -67,7 +67,7 @@ namespace API.Controllers
         [HttpGet("{packageId}/{rarityTypeId}")]
         public async Task<IActionResult> GetById(int packageId, int rarityTypeId)
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var packageRarityType = await _repository.GetPackageRarityTypeByIdAsync(packageId, rarityTypeId);
@@ -82,12 +82,12 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PackageRarityTypeDto packageRarityTypeDto)
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var packageRarityType = await _repository.AddPackageRarityTypeAsync(packageRarityTypeDto);
-                return CreatedAtAction(nameof(GetById), 
-                    new { packageId = packageRarityType.PackageId, rarityTypeId = packageRarityType.RarityTypeId }, 
+                return CreatedAtAction(nameof(GetById),
+                    new { packageId = packageRarityType.PackageId, rarityTypeId = packageRarityType.RarityTypeId },
                     packageRarityType);
             }
             catch (Exception ex)
@@ -99,7 +99,7 @@ namespace API.Controllers
         [HttpPut("{packageId}/{rarityTypeId}")]
         public async Task<IActionResult> Update(int packageId, int rarityTypeId, [FromBody] PackageRarityTypeDto packageRarityTypeDto)
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var updatedPackageRarityType = await _repository.UpdatePackageRarityTypeAsync(packageRarityTypeDto, packageId, rarityTypeId);
@@ -114,7 +114,7 @@ namespace API.Controllers
         [HttpDelete("{packageId}/{rarityTypeId}")]
         public async Task<IActionResult> Delete(int packageId, int rarityTypeId)
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var deletedPackageRarityType = await _repository.DeletePackageRarityTypeAsync(packageId, rarityTypeId);

@@ -21,7 +21,7 @@ namespace API.Controllers
         [HttpGet("{packageId}")]
         public async Task<IActionResult> GetRandomToy(int packageId)
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var result = await _giveawayRepository.PickToyFromPackageAsync(packageId);

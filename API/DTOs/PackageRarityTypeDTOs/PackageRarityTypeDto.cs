@@ -7,10 +7,6 @@ namespace API.DTOs.PackageRarityTypeDTOs
 {
     public class PackageRarityTypeDto
     {
-        public int PackageId { get; set; }
-
-        public int RarityTypeId { get; set; }
-
         public double Ratio { get; set; }
     }
 }
