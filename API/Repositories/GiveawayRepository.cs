@@ -59,11 +59,11 @@ namespace API.Repositories
 
             foreach (var toy in toys)
             {
-            cumulative += (float)toy.LuckPercentage * ratioConvertRate;
-            if (roll < cumulative)
-            {
-                return toy;
-            }
+                cumulative += (float)toy.LuckPercentage * ratioConvertRate;
+                if (roll < cumulative)
+                {
+                    return toy;
+                }
             }
 
             // Fallback to last if none picked due to floating point errors

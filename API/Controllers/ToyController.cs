@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.DTOs.ToyDTOs;
 using API.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -52,7 +53,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] DTOs.ToyDTOs.ToyDto toyDto)
+        public async Task<IActionResult> Create([FromBody] ToyDto toyDto)
         {
             if (toyDto == null)
             {
@@ -64,32 +65,9 @@ namespace API.Controllers
                 var createdToy = await _toyRepository.AddToyAsync(toyDto);
                 return CreatedAtAction(nameof(GetById), new { id = createdToy.Id }, createdToy);
             }
-            catch
+            catch (Exception ex)
             {
-                return StatusCode(500, "An unexpected error occurred.");
-            }
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] DTOs.ToyDTOs.ToyDto toyDto)
-        {
-            if (toyDto == null)
-            {
-                return BadRequest("Toy data is required.");
-            }
-
-            try
-            {
-                var updatedToy = await _toyRepository.UpdateToyAsync(toyDto, id);
-                if (updatedToy == null)
-                {
-                    return NotFound($"Toy with ID {id} not found.");
-                }
-                return Ok(updatedToy);
-            }
-            catch
-            {
-                return StatusCode(500, "An unexpected error occurred.");
+                return StatusCode(500, $"An error occurred while creating the toy: {ex.Message}");
             }
         }
 
@@ -105,10 +83,33 @@ namespace API.Controllers
                 }
                 return Ok(deletedToy);
             }
-            catch
+            catch (Exception ex)
             {
-                return StatusCode(500, "An unexpected error occurred.");
+                return StatusCode(500, $"An error occurred while deleting the toy: {ex.Message}");
             }
         }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] ToyDto toyDto)
+        {
+            if (toyDto == null)
+            {
+                return BadRequest("Toy data is required.");
+            }
+
+            try
+            {
+                var updatedToy = await _toyRepository.UpdateToyAsync(toyDto, id);
+                if (updatedToy == null)
+                {
+                    return NotFound($"Toy with ID {id} not found.");
+                }
+                return Ok(updatedToy);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while updating the toy: {ex.Message}");
+            }
+        }
+
     }
 }

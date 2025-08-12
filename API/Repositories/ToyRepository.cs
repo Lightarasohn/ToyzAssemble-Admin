@@ -17,6 +17,8 @@ namespace API.Repositories
         {
             _context = context;
         }
+
+
         public async Task<Toy> AddToyAsync(ToyDto toy)
         {
             try
@@ -48,6 +50,7 @@ namespace API.Repositories
             }
         }
 
+
         public async Task<Toy> DeleteToyAsync(int id)
         {
             try
@@ -57,7 +60,7 @@ namespace API.Repositories
                 await _context.SaveChangesAsync();
                 return toy;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("An error occurred while retrieving toys.", ex);
             }

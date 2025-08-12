@@ -9,8 +9,8 @@ namespace API.Interfaces
 {
     public interface IGiveawayRepository
     {
-        public Task<GiveawayPickedToyDto> PickToyFromPackageAsync(int packageId);
-        public PackageToyType PickToyTypeFromPackage(Package package);
-        public Toy PickToyFromToyType(ToyType toyType);
+        Task<GiveawayPickedToyDto> PickToyFromPackageAsync(int packageId);
+        PackageToyType PickToyTypeFromPackage(Package package);
+        Toy PickToyFromToyType(ToyType toyType);
     }
 }
