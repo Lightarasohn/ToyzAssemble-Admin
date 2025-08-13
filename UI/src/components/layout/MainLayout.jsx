@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { TeamOutlined, UserOutlined } from "@ant-design/icons";
-import { Breadcrumb, Card, Layout, Menu, theme } from "antd";
+import { useState, useEffect } from "react";
+import { TeamOutlined, UserOutlined, MenuOutlined } from "@ant-design/icons";
+import { Breadcrumb, Card, Layout, Menu, theme, Button } from "antd";
 import ToyzAssembleLogo from "../../assets/logo/ToyzAssembleLogo.png";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { breadcrumbNameMap } from "../../services/BreadcrumbNameMap";
@@ -9,9 +9,26 @@ const { Header, Content, Footer, Sider } = Layout;
 
 const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  // Responsive breakpoint kontrolü
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setCollapsed(true);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const items = [
     { key: 1, icon: <TeamOutlined />, label: "Toys", url: "/toys" },
@@ -20,7 +37,7 @@ const MainLayout = () => {
 
   const location = useLocation();
   const pathSnippets = location.pathname.split("/").filter((i) => i);
-
+  
   const breadcrumbItems = [
     <Breadcrumb.Item key="home">
       <Link to="/">Home</Link>
@@ -40,77 +57,172 @@ const MainLayout = () => {
   ];
 
   return (
-    <Layout style={{ height: "100%" }}>
+    <Layout 
+      style={{ 
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "row"
+      }}
+    >
       <Sider
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
+        breakpoint="lg"
+        collapsedWidth={isMobile ? 0 : 80}
+        trigger={isMobile ? null : undefined} // Mobilde trigger'ı gizle
         style={{
-          transition: "all 0.3s ease",
+          // Mobil için fixed, masaüstü için relative
+          position: isMobile ? "fixed" : "sticky",
+          zIndex: isMobile ? 1000 : "auto",
+          // Mobil için 100vh, masaüstü için sticky pozisyon
+          height: isMobile ? "100vh" : "100vh",
+          top: isMobile ? 0 : 0,
+          left: isMobile ? 0 : "auto",
+          transition: "all 0.3s cubic-bezier(0.2, 0, 0, 1) 0s",
+          boxShadow: isMobile && !collapsed ? "2px 0 8px rgba(0,0,0,0.15)" : "none",
+          // Masaüstünde scroll davranışını iyileştir
+          overflowY: "auto",
+          overflowX: "hidden"
         }}
       >
+        {/* Logo Container */}
         <div
           style={{
-            padding: collapsed ? "16px 0" : "16px",
-            textAlign: "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: collapsed ? "16px 8px" : "16px",
+            minHeight: "64px",
             transition: "all 0.3s ease",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+            flexShrink: 0 // Logo'nun küçülmesini önle
           }}
         >
-          <Link to="/">
+          <Link to="/" style={{ display: "flex", alignItems: "center" }}>
             <img
               src={ToyzAssembleLogo}
               alt="Toyz Assemble Logo"
               style={{
-                maxWidth: collapsed ? "40px" : "60%",
+                width: collapsed ? "32px" : "48px",
+                height: collapsed ? "32px" : "48px",
                 transition: "all 0.3s ease",
+                borderRadius: "50%",
+                objectFit: "cover"
               }}
             />
           </Link>
         </div>
 
-        <Menu
-          theme="dark"
-          mode="inline"
-          items={items.map((item) => ({
-            key: item.key,
-            icon: item.icon,
-            label: !collapsed ? (
-              <Link to={item.url}>{item.label}</Link>
-            ) : (
-              <Link to={item.url}></Link>
-            ),
-          }))}
-          style={{ transition: "all 0.3s ease" }}
-        />
+        {/* Menu Container */}
+        <div style={{ 
+          flex: 1, 
+          overflow: "auto",
+          display: "flex",
+          flexDirection: "column"
+        }}>
+          <Menu
+            theme="dark"
+            mode="inline"
+            items={items.map((item) => ({
+              key: item.key,
+              icon: item.icon,
+              label: <Link to={item.url}>{item.label}</Link>,
+            }))}
+            style={{ 
+              border: "none",
+              background: "transparent",
+              flex: 1
+            }}
+          />
+        </div>
       </Sider>
 
-      <Layout style={{ gap: "16px" }}>
+      {/* Mobile Overlay */}
+      {isMobile && !collapsed && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.45)",
+            zIndex: 999
+          }}
+          onClick={() => setCollapsed(true)}
+        />
+      )}
+
+      {/* Main Content Area */}
+      <Layout 
+        style={{ 
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          marginLeft: isMobile ? 0 : 0,
+          minHeight: "100vh",
+          // Mobilde sider'ın altında görünmesini sağla
+          position: "relative"
+        }}
+      >
+        {/* Header */}
         <Header
           style={{
-            padding: 0,
+            display: "flex",
+            alignItems: "center",
+            padding: "0 16px",
             background: colorBgContainer,
-            maxHeight: "64px",
-            overflow: "hidden",
+            height: "64px",
+            flexShrink: 0,
+            borderBottom: "1px solid #f0f0f0",
+            // Mobilde header'ın sider'ın üstünde olmasını sağla
+            //zIndex: isMobile ? 1001 : "auto",
+            position: "relative"
           }}
         >
+          {/* Mobil Hamburger Menu Butonu */}
+          {isMobile && (
+            <Button
+              type="text"
+              icon={<MenuOutlined />}
+              onClick={() => setCollapsed(false)}
+              style={{
+                marginRight: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "40px",
+                height: "40px",
+                border: "1px solid #d9d9d9",
+                borderRadius: "6px"
+              }}
+            />
+          )}
+          
           <Card
             size="small"
             style={{
               width: "100%",
-              height: "100%",
+              height: "48px",
               borderRadius: borderRadiusLG,
-              overflow: "hidden",
               display: "flex",
               alignItems: "center",
+              border: "none",
+              boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)"
+            }}
+            bodyStyle={{ 
+              padding: "0 16px",
+              display: "flex",
+              alignItems: "center",
+              width: "100%"
             }}
           >
             <Breadcrumb
               style={{
-                padding: "0 16px",
                 width: "100%",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
+                margin: 0,
+                fontSize: "14px"
               }}
             >
               {breadcrumbItems}
@@ -118,19 +230,51 @@ const MainLayout = () => {
           </Card>
         </Header>
 
-        <Content style={{ margin: "0 16px" }}>
+        {/* Content Area */}
+        <Content 
+          style={{ 
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            padding: "16px",
+            overflow: "hidden" // Ana overflow'u kaldır
+          }}
+        >
           <Card
             style={{
-              minHeight: 360,
+              flex: 1,
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 0, // Flex shrinking için gerekli
+              boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)"
             }}
           >
-            <Outlet />
+            <div style={{ 
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              overflow: "auto", // Sadece içerik alanında scroll
+              minHeight: 0 // Flex shrinking için gerekli
+            }}>
+              <Outlet />
+            </div>
           </Card>
         </Content>
 
-        <Footer style={{ textAlign: "center" }}>
+        {/* Footer */}
+        <Footer 
+          style={{ 
+            textAlign: "center",
+            flexShrink: 0,
+            padding: "16px",
+            background: "#fafafa",
+            borderTop: "1px solid #f0f0f0",
+            fontSize: "14px",
+            color: "#666"
+          }}
+        >
           Toyz Assemble ©{new Date().getFullYear()}
         </Footer>
       </Layout>

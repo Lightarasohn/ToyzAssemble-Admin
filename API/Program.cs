@@ -53,15 +53,22 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhostClient", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "https://localhost:5173", "http://localhost:4286", "https://localhost:4286") // Buraya izin vermek istediğin adresi yaz
+        policy.WithOrigins("https://pw3v9thc-4286.euw.devtunnels.ms","http://localhost:5173", "https://localhost:5173", "http://localhost:4286", "https://localhost:4286") // Buraya izin vermek istediğin adresi yaz
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
+    // options.AddPolicy("AllowVscodePortClient", policy =>
+    // {
+    //     policy.WithOrigins("https://pw3v9thc-4286.euw.devtunnels.ms")
+    //           .AllowAnyHeader()
+    //           .AllowAnyMethod();
+    // });
 });
 
 
 var app = builder.Build();
 app.UseCors("AllowLocalhostClient");
+// app.UseCors("AllowVscodePortClient");
 
 app.UseHttpsRedirection();
 // Configure the HTTP request pipeline.
