@@ -53,7 +53,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhostClient", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // Buraya izin vermek istediğin adresi yaz
+        policy.WithOrigins("http://localhost:5173", "https://localhost:5173", "http://localhost:4286", "https://localhost:4286") // Buraya izin vermek istediğin adresi yaz
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -61,7 +61,9 @@ builder.Services.AddCors(options =>
 
 
 var app = builder.Build();
+app.UseCors("AllowLocalhostClient");
 
+app.UseHttpsRedirection();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -73,10 +75,6 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
     });
 }
-
-app.UseHttpsRedirection();
-
-app.UseCors("AllowLocalhostClient");
 
 app.UseRouting();
 app.UseAuthorization();
