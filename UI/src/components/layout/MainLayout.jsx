@@ -10,7 +10,8 @@ const { Header, Content, Footer, Sider } = Layout;
 const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  
+  const [selectedMenuKey, setSelectedMenuKey] = useState(null);
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -26,18 +27,18 @@ const MainLayout = () => {
     };
 
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const items = [
-    { key: 1, icon: <TeamOutlined />, label: "Toys", url: "/toys" },
-    { key: 2, icon: <UserOutlined />, label: "Users", url: "/users" },
+    { key: "1", icon: <TeamOutlined />, label: "Toys", url: "/toys" },
+    { key: "2", icon: <UserOutlined />, label: "Users", url: "/users" },
   ];
 
   const location = useLocation();
   const pathSnippets = location.pathname.split("/").filter((i) => i);
-  
+
   const breadcrumbItems = [
     <Breadcrumb.Item key="home">
       <Link to="/">Home</Link>
@@ -56,12 +57,19 @@ const MainLayout = () => {
     }),
   ];
 
+  useEffect(() => {
+    const currentItem = items.find((item) =>
+      location.pathname.startsWith(item.url)
+    );
+    setSelectedMenuKey(currentItem ? [currentItem.key] : []);
+  }, [location.pathname]);
+
   return (
-    <Layout 
-      style={{ 
+    <Layout
+      style={{
         minHeight: "100vh",
         display: "flex",
-        flexDirection: "row"
+        flexDirection: "row",
       }}
     >
       <Sider
@@ -80,10 +88,11 @@ const MainLayout = () => {
           top: isMobile ? 0 : 0,
           left: isMobile ? 0 : "auto",
           transition: "all 0.3s cubic-bezier(0.2, 0, 0, 1) 0s",
-          boxShadow: isMobile && !collapsed ? "2px 0 8px rgba(0,0,0,0.15)" : "none",
+          boxShadow:
+            isMobile && !collapsed ? "2px 0 8px rgba(0,0,0,0.15)" : "none",
           // Masaüstünde scroll davranışını iyileştir
           overflowY: "auto",
-          overflowX: "hidden"
+          overflowX: "hidden",
         }}
       >
         {/* Logo Container */}
@@ -96,7 +105,7 @@ const MainLayout = () => {
             minHeight: "64px",
             transition: "all 0.3s ease",
             borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-            flexShrink: 0 // Logo'nun küçülmesini önle
+            flexShrink: 0, // Logo'nun küçülmesini önle
           }}
         >
           <Link to="/" style={{ display: "flex", alignItems: "center" }}>
@@ -108,19 +117,21 @@ const MainLayout = () => {
                 height: collapsed ? "32px" : "48px",
                 transition: "all 0.3s ease",
                 borderRadius: "50%",
-                objectFit: "cover"
+                objectFit: "cover",
               }}
             />
           </Link>
         </div>
 
         {/* Menu Container */}
-        <div style={{ 
-          flex: 1, 
-          overflow: "auto",
-          display: "flex",
-          flexDirection: "column"
-        }}>
+        <div
+          style={{
+            flex: 1,
+            overflow: "auto",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           <Menu
             theme="dark"
             mode="inline"
@@ -129,11 +140,13 @@ const MainLayout = () => {
               icon: item.icon,
               label: <Link to={item.url}>{item.label}</Link>,
             }))}
-            style={{ 
+            style={{
               border: "none",
               background: "transparent",
-              flex: 1
+              flex: 1,
             }}
+            selectedKeys={selectedMenuKey} // artık array
+            onSelect={(item) => setSelectedMenuKey([item.key])}
           />
         </div>
       </Sider>
@@ -148,22 +161,22 @@ const MainLayout = () => {
             right: 0,
             bottom: 0,
             backgroundColor: "rgba(0, 0, 0, 0.45)",
-            zIndex: 999
+            zIndex: 999,
           }}
           onClick={() => setCollapsed(true)}
         />
       )}
 
       {/* Main Content Area */}
-      <Layout 
-        style={{ 
+      <Layout
+        style={{
           display: "flex",
           flexDirection: "column",
           flex: 1,
           marginLeft: isMobile ? 0 : 0,
           minHeight: "100vh",
           // Mobilde sider'ın altında görünmesini sağla
-          position: "relative"
+          position: "relative",
         }}
       >
         {/* Header */}
@@ -178,7 +191,7 @@ const MainLayout = () => {
             borderBottom: "1px solid #f0f0f0",
             // Mobilde header'ın sider'ın üstünde olmasını sağla
             //zIndex: isMobile ? 1001 : "auto",
-            position: "relative"
+            position: "relative",
           }}
         >
           {/* Mobil Hamburger Menu Butonu */}
@@ -195,11 +208,11 @@ const MainLayout = () => {
                 width: "40px",
                 height: "40px",
                 border: "1px solid #d9d9d9",
-                borderRadius: "6px"
+                borderRadius: "6px",
               }}
             />
           )}
-          
+
           <Card
             size="small"
             style={{
@@ -209,20 +222,20 @@ const MainLayout = () => {
               display: "flex",
               alignItems: "center",
               border: "none",
-              boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)"
+              boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)",
             }}
-            bodyStyle={{ 
+            bodyStyle={{
               padding: "0 16px",
               display: "flex",
               alignItems: "center",
-              width: "100%"
+              width: "100%",
             }}
           >
             <Breadcrumb
               style={{
                 width: "100%",
                 margin: 0,
-                fontSize: "14px"
+                fontSize: "14px",
               }}
             >
               {breadcrumbItems}
@@ -231,13 +244,13 @@ const MainLayout = () => {
         </Header>
 
         {/* Content Area */}
-        <Content 
-          style={{ 
+        <Content
+          style={{
             display: "flex",
             flexDirection: "column",
             flex: 1,
             padding: "16px",
-            overflow: "hidden" // Ana overflow'u kaldır
+            overflow: "hidden", // Ana overflow'u kaldır
           }}
         >
           <Card
@@ -248,31 +261,33 @@ const MainLayout = () => {
               display: "flex",
               flexDirection: "column",
               minHeight: 0, // Flex shrinking için gerekli
-              boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)"
+              boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)",
             }}
           >
-            <div style={{ 
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              overflow: "auto", // Sadece içerik alanında scroll
-              minHeight: 0 // Flex shrinking için gerekli
-            }}>
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "auto", // Sadece içerik alanında scroll
+                minHeight: 0, // Flex shrinking için gerekli
+              }}
+            >
               <Outlet />
             </div>
           </Card>
         </Content>
 
         {/* Footer */}
-        <Footer 
-          style={{ 
+        <Footer
+          style={{
             textAlign: "center",
             flexShrink: 0,
             padding: "16px",
             background: "#fafafa",
             borderTop: "1px solid #f0f0f0",
             fontSize: "14px",
-            color: "#666"
+            color: "#666",
           }}
         >
           Toyz Assemble ©{new Date().getFullYear()}
