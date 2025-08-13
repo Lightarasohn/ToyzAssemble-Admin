@@ -2,8 +2,8 @@ import { Button, Card, Form, Input, InputNumber, Select } from "antd";
 
 const ToyCheckedForm = () => {
   
-  const handleFinish = () => {
-
+  const handleFinish = (val) => {
+    console.log(val);
   };
 
   return (
@@ -22,8 +22,7 @@ const ToyCheckedForm = () => {
           <InputNumber
             addonBefore="$"
             addonAfter="float"
-            min="0"
-            stringMode
+            min={0}
             placeholder="10.10"
             onChange={(e) => console.log(e.target.value)}
           />
@@ -37,9 +36,8 @@ const ToyCheckedForm = () => {
           <InputNumber
             addonBefore="%"
             addonAfter="float"
-            min="0"
-            max="100"
-            stringMode
+            min={0}
+            max={100}
             placeholder="10.10"
             onChange={(e) => console.log(e.target.value)}
           />
