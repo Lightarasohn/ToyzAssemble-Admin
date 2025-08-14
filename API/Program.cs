@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using API.Contexts;
 using API.Interfaces;
 using API.Repositories;
+using API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,6 +49,7 @@ builder.Services.AddScoped<IPackageRepository, PackageRepository>();
 builder.Services.AddScoped<IPackageRarityTypeRepository, PackageRarityTypeRepository>();
 builder.Services.AddScoped<IGiveawayRepository, GiveawayRepository>();
 builder.Services.AddScoped<IRarityTypeRepository, RarityTypeRepository>();
+builder.Services.AddScoped<IToyService, ToyService>();
 
 builder.Services.AddCors(options =>
 {

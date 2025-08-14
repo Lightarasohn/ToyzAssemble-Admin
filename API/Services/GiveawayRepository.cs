@@ -7,7 +7,7 @@ using API.Interfaces;
 using API.Mappers;
 using API.Models;
 
-namespace API.Repositories
+namespace API.Services
 {
     public class GiveawayRepository : IGiveawayRepository
     {
