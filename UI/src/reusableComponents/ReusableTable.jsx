@@ -1,5 +1,6 @@
-import { Button, Checkbox, Table } from "antd";
-import React from "react";
+import { FilterFilled, PlusOutlined } from "@ant-design/icons";
+import { Button, Card, Checkbox, Divider, Popover, Select, Table, Tag } from "antd";
+import React, { useState } from "react";
 
 const addFunctionalityColumns = (
   data,
@@ -32,7 +33,7 @@ const addFunctionalityColumns = (
       dataIndex: "delete",
       key: "delete",
       render: (cellVal, record, rowIndex) => (
-        <Button onClick={() => deleteButtonFunction(record)}>
+        <Button danger type="text" onClick={() => deleteButtonFunction(record)}>
           {deleteInsider}
         </Button>
       ),
@@ -53,7 +54,11 @@ const addFunctionalityColumns = (
       dataIndex: "edit",
       key: "edit",
       render: (cellVal, record, rowIndex) => (
-        <Button onClick={() => editButtonFunciton(record)} type="text" size="small">
+        <Button
+          onClick={() => editButtonFunciton(record)}
+          type="text"
+          size="small"
+        >
           {editInsider}
         </Button>
       ),
@@ -70,10 +75,14 @@ const addFunctionalityColumns = (
   }
   if (checkEnabled) {
     newColumns.unshift({
-      title: checkAllEnabled ? <Checkbox
-        checked={checkedList.length === data.length}
-        onChange={() => checkAllOnChangeFunction()}
-      /> : "",
+      title: checkAllEnabled ? (
+        <Checkbox
+          checked={checkedList.length === data.length}
+          onChange={() => checkAllOnChangeFunction()}
+        />
+      ) : (
+        ""
+      ),
       key: "select",
       render: (cellVal, record, rowIndex) => (
         <Checkbox
@@ -131,31 +140,33 @@ const getValueByDataIndex = (record, dataIndex) => {
 };
 
 const ReusableTable = ({
-  data,
-  columns,
-  loading,
-  rowKey = "id",
-  pagination = {},
-  editEnabled,
-  editButtonFunciton = console.log("Set editButtonFunction please!"),
-  editInsider = "Edit",
-  editOnHeaderCellStyle,
-  editOnRowStyle,
-  editOnCellStyle,
-  checkEnabled,
-  checkAllEnabled = true,
-  checkAllOnChangeFunction = console.log("Set checkOnAllChangeFunction please"),
-  checkOnChangeFunction = console.log("Set checkOnChangeFunction please!"),
-  checkedList,
-  checkOnHeaderCellStyle,
-  checkOnRowStyle,
-  checkOnCellStyle,
-  deleteEnabled,
-  deleteButtonFunction,
-  deleteInsider = "Delete",
-  deleteOnHeaderCellStyle,
-  deleteOnRowStyle,
-  deleteOnCellStyle
+  data, // @array
+  columns, // @array
+  loading = true, // @boolean
+  rowKey = "id", // @rowkey (id)
+  pagination = {}, // @object
+  editEnabled = true, // @boolean
+  editButtonFunciton = console.log("Set editButtonFunction please!"), // @function()
+  editInsider = "Edit", // @text | component
+  editOnHeaderCellStyle, // @style
+  editOnRowStyle, // @style object
+  editOnCellStyle, // @style object
+  checkEnabled, // @boolean
+  checkAllEnabled = true, // @boolean
+  checkAllOnChangeFunction = console.log("Set checkOnAllChangeFunction please"), // @function()
+  checkOnChangeFunction = console.log("Set checkOnChangeFunction please!"), // @function()
+  checkedList, // @array
+  checkOnHeaderCellStyle, // @style object
+  checkOnRowStyle, // @style object
+  checkOnCellStyle, // @style object
+  deleteEnabled = true, // @boolean
+  deleteButtonFunction = console.log("Set deleteButtonFunction please!"), // @function()
+  deleteInsider = "Delete", // @text | component
+  deleteOnHeaderCellStyle, // @style object
+  deleteOnRowStyle, // @style object
+  deleteOnCellStyle, // @style object
+  size = "middle", // @large | middle | small
+  enableFilter = true,
 }) => {
   const newColumns = addFunctionalityColumns(
     data,
@@ -183,23 +194,81 @@ const ReusableTable = ({
   );
   const columnsWithSorter = addSorterToColumns(newColumns);
 
+  const [filters, setFilters] = useState([])
+
+  const handleAddFilter = () => {
+    let newFilter = {
+      name: columns[0].title,
+      operator: "=",
+      value: null
+    }
+    setFilters([...filters, newFilter]);
+  }
   return (
-    <Table
-      dataSource={data}
-      columns={columnsWithSorter}
-      rowKey={rowKey}
-      loading={loading}
-      bordered
-      rowHoverable
-      showHeader
-      scroll={{ x: "max-content" }}
-      pagination={{
-        responsive: true,
-        showSizeChanger: true,
-        showQuickJumper: true,
-        ...pagination,
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "5px",
+        justifyContent: "center",
+        alignContent: "center",
       }}
-    />
+    >
+      {enableFilter ? (
+        <Popover
+          content={
+            <>
+              {filters.length ? 
+              <>
+                {filters.map(filter => 
+                  <Tag>
+                  </Tag>
+                )}
+              </> 
+              : 
+              <>
+                Add a column below to filter the view
+                <Divider style={{padding:"0px"}}></Divider>
+                <Button icon={<PlusOutlined />} size="small" type="text" onClick={() => handleAddFilter()}>Add Filter</Button>
+              </>}
+            </>
+          }
+          title={filters.length ? "" : "No filters applied to this table"}
+          trigger={"click"}
+          arrow={false}
+          autoAdjustOverflow={true}
+          fresh={false}
+          destroyOnHidden={false}
+          placement="bottomLeft"
+        >
+          <Button
+            style={{
+              maxWidth: "10%",
+            }}
+            icon={<FilterFilled />}
+          >
+            Filter
+          </Button>
+        </Popover>
+      ) : null}
+      <Table
+        dataSource={data}
+        columns={columnsWithSorter}
+        rowKey={rowKey}
+        loading={loading}
+        bordered
+        rowHoverable
+        showHeader
+        scroll={{ x: "max-content" }}
+        pagination={{
+          responsive: true,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          ...pagination,
+        }}
+        size={size}
+      />
+    </div>
   );
 };
 

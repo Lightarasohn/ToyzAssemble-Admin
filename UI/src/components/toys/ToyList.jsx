@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import GetAllToysAPI from "../../api/toy/GetAllToysAPI";
 import ReusableTable from "../../reusableComponents/ReusableTable";
 import { Button, Checkbox } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 const ToyList = ({
   handleSelection,
@@ -66,12 +66,15 @@ const ToyList = ({
       editEnabled={true}
       editButtonFunciton={(record) => console.log("edit:", record)}
       editInsider={<EditOutlined />}
-      editOnRowStyle={{ width: "1px", height: "1000px" }}
       checkEnabled={true}
       checkAllEnabled={true}
       checkAllOnChangeFunction={() => handleCheckAll()}
       checkOnChangeFunction={(record) => handleSelection(record)}
       checkedList={selectedToys}
+      deleteEnabled={true}
+      deleteButtonFunction={(record) => console.log("delete:", record)}
+      deleteInsider={<DeleteOutlined />}
+      size="large"
     />
   );
 };
