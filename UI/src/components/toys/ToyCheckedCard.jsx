@@ -17,7 +17,7 @@ const ToyCheckedCard = ({ selectedToys, setSelectedToys, handleSelection, clearS
         style={{ display: "flex", flexDirection: "column", flex: 3, gap: "8px" }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Title level={3} style={{ margin: 0 }}>Selected Toys</Title>
+          <Title level={3} style={{ margin: 0 }}>Selected Toys ({selectedToys.length})</Title>
           <Button size="small" onClick={clearSelection}>Clear All</Button>
         </div>
         <ToyCheckedList selectedToys={selectedToys} handleSelection={handleSelection}></ToyCheckedList>

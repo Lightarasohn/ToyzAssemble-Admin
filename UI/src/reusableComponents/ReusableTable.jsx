@@ -2,6 +2,7 @@ import { Button, Checkbox, Table } from "antd";
 import React from "react";
 
 const addFunctionalityColumns = (
+  data,
   columns,
   editEnabled,
   editButtonFunciton,
@@ -10,6 +11,8 @@ const addFunctionalityColumns = (
   editOnRowStyle,
   editOnCellStyle,
   checkEnabled,
+  checkAllEnabled,
+  checkAllOnChangeFunction,
   checkOnChangeFunction,
   checkedList,
   checkOnHeaderCellStyle,
@@ -50,7 +53,7 @@ const addFunctionalityColumns = (
       dataIndex: "edit",
       key: "edit",
       render: (cellVal, record, rowIndex) => (
-        <Button onClick={() => editButtonFunciton(record)}>
+        <Button onClick={() => editButtonFunciton(record)} type="text" size="small">
           {editInsider}
         </Button>
       ),
@@ -67,8 +70,10 @@ const addFunctionalityColumns = (
   }
   if (checkEnabled) {
     newColumns.unshift({
-      title: "",
-      dataIndex: "select",
+      title: checkAllEnabled ? <Checkbox
+        checked={checkedList.length === data.length}
+        onChange={() => checkAllOnChangeFunction()}
+      /> : "",
       key: "select",
       render: (cellVal, record, rowIndex) => (
         <Checkbox
@@ -138,6 +143,8 @@ const ReusableTable = ({
   editOnRowStyle,
   editOnCellStyle,
   checkEnabled,
+  checkAllEnabled = true,
+  checkAllOnChangeFunction = console.log("Set checkOnAllChangeFunction please"),
   checkOnChangeFunction = console.log("Set checkOnChangeFunction please!"),
   checkedList,
   checkOnHeaderCellStyle,
@@ -151,6 +158,7 @@ const ReusableTable = ({
   deleteOnCellStyle
 }) => {
   const newColumns = addFunctionalityColumns(
+    data,
     columns,
     editEnabled,
     editButtonFunciton,
@@ -159,6 +167,8 @@ const ReusableTable = ({
     editOnRowStyle,
     editOnCellStyle,
     checkEnabled,
+    checkAllEnabled,
+    checkAllOnChangeFunction,
     checkOnChangeFunction,
     checkedList,
     checkOnHeaderCellStyle,

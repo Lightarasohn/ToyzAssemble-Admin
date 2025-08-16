@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { TeamOutlined, UserOutlined, MenuOutlined } from "@ant-design/icons";
+import {
+  TeamOutlined,
+  UserOutlined,
+  MenuOutlined,
+  MoonOutlined,
+  SunOutlined,
+} from "@ant-design/icons";
 import { Breadcrumb, Card, Layout, Menu, theme, Button } from "antd";
 import ToyzAssembleLogo from "../../assets/logo/ToyzAssembleLogo.png";
 import { Link, Outlet, useLocation } from "react-router-dom";
@@ -7,7 +13,7 @@ import { breadcrumbNameMap } from "../../services/BreadcrumbNameMap";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const MainLayout = () => {
+const MainLayout = ({ selectedTheme, setSelectedTheme }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedMenuKey, setSelectedMenuKey] = useState(null);
@@ -184,11 +190,12 @@ const MainLayout = () => {
           style={{
             display: "flex",
             alignItems: "center",
+            justifyContent: "space-between",
             padding: "0 16px",
             background: colorBgContainer,
             height: "64px",
             flexShrink: 0,
-            borderBottom: "1px solid #f0f0f0",
+            borderBottom: "1px solid",
             // Mobilde header'ın sider'ın üstünde olmasını sağla
             //zIndex: isMobile ? 1001 : "auto",
             position: "relative",
@@ -216,13 +223,13 @@ const MainLayout = () => {
           <Card
             size="small"
             style={{
-              width: "100%",
               height: "48px",
               borderRadius: borderRadiusLG,
               display: "flex",
+              justifyContent: "flex-start",
+              justifySelf: "flex-start",
               alignItems: "center",
               border: "none",
-              boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)",
             }}
             bodyStyle={{
               padding: "0 16px",
@@ -233,7 +240,6 @@ const MainLayout = () => {
           >
             <Breadcrumb
               style={{
-                width: "100%",
                 margin: 0,
                 fontSize: "14px",
               }}
@@ -241,6 +247,15 @@ const MainLayout = () => {
               {breadcrumbItems}
             </Breadcrumb>
           </Card>
+          <Button
+            type="default"
+            style={{
+              display: "flex",
+              justifySelf: "flex-end",
+            }}
+            onClick={() => setSelectedTheme(!selectedTheme)}
+            icon={selectedTheme ? <SunOutlined /> : <MoonOutlined />}
+          ></Button>
         </Header>
 
         {/* Content Area */}
@@ -284,10 +299,8 @@ const MainLayout = () => {
             textAlign: "center",
             flexShrink: 0,
             padding: "16px",
-            background: "#fafafa",
-            borderTop: "1px solid #f0f0f0",
+            borderTop: "1px solid",
             fontSize: "14px",
-            color: "#666",
           }}
         >
           Toyz Assemble ©{new Date().getFullYear()}

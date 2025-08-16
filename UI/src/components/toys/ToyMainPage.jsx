@@ -44,6 +44,7 @@ const ToyMainPage = () => {
         <ToyList 
             handleSelection={handleSelection}
             selectedToys={selectedToys}
+            setSelectedToys={setSelectedToys}
             isFetchList={isFetchList}
             setIsFetchList={setIsFetchList}
         ></ToyList>
