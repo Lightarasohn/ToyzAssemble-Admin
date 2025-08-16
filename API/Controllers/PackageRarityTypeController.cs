@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("api/packageRarityType")]
+    [Route("api/package-rarity-type")]
     public class PackageRarityTypeController : ControllerBase
     {
         private readonly IPackageRarityTypeRepository _repository;

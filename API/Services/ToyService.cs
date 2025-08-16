@@ -18,26 +18,19 @@ namespace API.Services
         }
         public async Task<List<Toy>> UpdateRangeToyList(ToyUpdateListServiceDto updateDtoList)
         {
-            var returnToyList = new List<Toy>();
-            foreach (int toyId in updateDtoList.IdList)
+            var toys = _context.Toys.Where(t => updateDtoList.IdList.Contains(t.Id) && t.Deleted == false).ToList();
+            var updateDto = updateDtoList.UpdateDto;
+
+            foreach (var toy in toys)
             {
-                var toy = FindToy(toyId);
-                if (toy == null) continue;
-                var updateDto = updateDtoList.UpdateDto;
-                toy.LuckPercentage = updateDto.LuckPercentage;
-                toy.Price = updateDto.Price;
-                toy.RarityId = updateDto.RarityId;
-                toy.ToyTypeId = updateDto.ToyTypeId;
-                returnToyList.Add(toy);
+                toy.LuckPercentage = updateDto.LuckPercentage ?? toy.LuckPercentage;
+                toy.Price = updateDto.Price ?? toy.Price;
+                toy.RarityId = updateDto.RarityTypeId ?? toy.RarityId;
+                toy.ToyTypeId = updateDto.ToyTypeId ?? toy.ToyTypeId;
             }
 
             await _context.SaveChangesAsync();
-            return returnToyList;
-        }
-
-        private Toy? FindToy(int id)
-        {
-            return _context.Toys.FirstOrDefault(t => t.Id == id); 
+            return toys;
         }
     }
 }

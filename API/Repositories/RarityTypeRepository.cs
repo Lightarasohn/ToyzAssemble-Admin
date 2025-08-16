@@ -7,6 +7,7 @@ using API.DTOs.RarityTypeDTOs;
 using API.Interfaces;
 using API.Mappers;
 using API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Repositories
 {
@@ -18,31 +19,43 @@ namespace API.Repositories
             _context = context;
         }
 
-        public async Task AddRarityTypeAsync(RarityTypeDto rarityTypeDto)
+        public async Task<RarityType> AddRarityTypeAsync(RarityTypeDto rarityTypeDto)
         {
+            var existing = await _context.RarityTypes.AnyAsync(x => x.Name == rarityTypeDto.Name);
+            if (existing) throw new Exception($"There is already a rarity type named: {rarityTypeDto.Name}");
             var rarityType = rarityTypeDto.ToModel();
-            await _context.RarityTypes.AddAsync(rarityType);
+            var addedRarityType = await _context.RarityTypes.AddAsync(rarityType);
             await _context.SaveChangesAsync();
+            return addedRarityType.Entity;
         }
 
-        public Task DeleteRarityTypeAsync(int id)
+        public async Task<RarityType> DeleteRarityTypeAsync(int id)
         {
-            throw new NotImplementedException();
+            var rarityType = await _context.RarityTypes.FirstOrDefaultAsync(x => x.Id == id)
+                ?? throw new Exception($"The rarity type with id of {id} is not exist");
+            rarityType.Deleted = true;
+            await _context.SaveChangesAsync();
+            return rarityType;
         }
 
-        public Task<IEnumerable<RarityType>> GetAllRarityTypesAsync()
+        public async Task<IEnumerable<RarityType>> GetAllRarityTypesAsync()
         {
-            throw new NotImplementedException();
+            return await _context.RarityTypes.AsNoTracking().Include(x => x.PackageRarityTypes).ToListAsync();
         }
 
-        public Task<RarityType> GetRarityTypeByIdAsync(int id)
+        public async Task<RarityType> GetRarityTypeByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.RarityTypes.FirstOrDefaultAsync(x => x.Id == id)
+                ?? throw new Exception($"The rarity type with id of {id} is not exist");
         }
 
-        public Task UpdateRarityTypeAsync(RarityTypeDto rarityTypeDto, int id)
+        public async Task<RarityType> UpdateRarityTypeAsync(RarityTypeDto rarityTypeDto, int id)
         {
-            throw new NotImplementedException();
+            var rarityType = await _context.RarityTypes.FirstOrDefaultAsync(x => x.Id == id)
+                ?? throw new Exception($"The rarity type with id of {id} is not exist");
+            rarityType.Name = rarityTypeDto.Name;
+            await _context.SaveChangesAsync();
+            return rarityType;
         }
     }
 }

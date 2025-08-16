@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("api/toytype")]
+    [Route("api/toy-type")]
     public class ToyTypeController : ControllerBase
     {
         private readonly IToyTypeRepository _toyTypeRepository;

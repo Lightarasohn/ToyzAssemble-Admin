@@ -11,8 +11,8 @@ namespace API.Interfaces
     {
         Task<IEnumerable<RarityType>> GetAllRarityTypesAsync();
         Task<RarityType> GetRarityTypeByIdAsync(int id);
-        Task AddRarityTypeAsync(RarityTypeDto rarityTypeDto);
-        Task UpdateRarityTypeAsync(RarityTypeDto rarityTypeDto, int id);
-        Task DeleteRarityTypeAsync(int id);
+        Task<RarityType> AddRarityTypeAsync(RarityTypeDto rarityTypeDto);
+        Task<RarityType> UpdateRarityTypeAsync(RarityTypeDto rarityTypeDto, int id);
+        Task<RarityType> DeleteRarityTypeAsync(int id);
     }
 }
