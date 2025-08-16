@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import ToyList from "./ToyList";
 import { Card, Tag } from "antd";
 import ToyCheckedList from "./ToyCheckedList";
+import ToyCheckedCard from "./ToyCheckedCard";
 
 const ToyMainPage = () => {
   const [selectedToys, setSelectedToys] = useState([]);
+  const [isFetchList, setIsFetchList] = useState(true);
 
   const handleSelection = (item) => {
     if (selectedToys.includes(item)) {
@@ -13,10 +15,6 @@ const ToyMainPage = () => {
       setSelectedToys([...selectedToys, item]);
     }
   };
-
-  useEffect(() => {
-    console.log("selectedToys:", selectedToys);
-  }, [selectedToys]);
 
   return (
     <div 
@@ -27,10 +25,13 @@ const ToyMainPage = () => {
       }}
     >
       {selectedToys.length ?
-        <ToyCheckedList 
+        <ToyCheckedCard 
           selectedToys={selectedToys} 
           handleSelection={handleSelection} 
-          clearSelection={() => setSelectedToys([])} 
+          clearSelection={() => setSelectedToys([])}
+          isFetchList={isFetchList}
+          setIsFetchList={setIsFetchList}
+          setSelectedToys={setSelectedToys}
         />
         : null}
       <div
@@ -42,7 +43,9 @@ const ToyMainPage = () => {
       >
         <ToyList 
             handleSelection={handleSelection}
-            selectedToys={selectedToys}    
+            selectedToys={selectedToys}
+            isFetchList={isFetchList}
+            setIsFetchList={setIsFetchList}
         ></ToyList>
       </div>
     </div>

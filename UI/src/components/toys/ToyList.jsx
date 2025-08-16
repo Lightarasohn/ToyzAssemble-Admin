@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import GetAllToysAPI from "../../api/toys/GetAllToysAPI";
+import GetAllToysAPI from "../../api/toy/GetAllToysAPI";
 import ReusableTable from "../../reusableComponents/ReusableTable";
 import { Button, Checkbox } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 
-const ToyList = ({handleSelection, selectedToys}) => {
+const ToyList = ({handleSelection, selectedToys, isFetchList, setIsFetchList}) => {
     const [toys, setToys] = useState([]);
     const [listLoading, setListLoading] = useState(true);
+    
 
     const toyColumns = [
         { title: 'Name', dataIndex: 'name', key: 'name' },
@@ -29,8 +30,11 @@ const ToyList = ({handleSelection, selectedToys}) => {
                 setListLoading(false);
             }
         };
-        fetchToys();
-    }, []);
+        if(isFetchList){
+            fetchToys();
+            setIsFetchList(false);
+        }
+    }, [isFetchList]);
 
     return (
         <ReusableTable
