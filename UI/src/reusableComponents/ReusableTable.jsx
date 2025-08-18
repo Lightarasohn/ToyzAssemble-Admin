@@ -161,31 +161,42 @@ const applyFilters = (data, filters) => {
       const filterValue = filter.value;
 
       // Boş filter değeri varsa o filtreyi atla
-      if (!filterValue && filterValue !== 0) {
+      if (filterValue === "" || filterValue === null || filterValue === undefined) {
         return true;
       }
 
       switch (filter.operator) {
-        case "=":
+        case "=": // equals
           return String(value).toLowerCase() === String(filterValue).toLowerCase();
-        case "==":
+
+        case "==": // like
           return String(value).toLowerCase().includes(String(filterValue).toLowerCase());
-        case "!==":
+
+        case "!=": // not equal
           return String(value).toLowerCase() !== String(filterValue).toLowerCase();
-        case ">":
+
+        case "!==": // not like
+          return !String(value).toLowerCase().includes(String(filterValue).toLowerCase());
+
+        case ">": // greater than
           return Number(value) > Number(filterValue);
-        case ">=":
+
+        case ">=": // greater than or equal
           return Number(value) >= Number(filterValue);
-        case "<":
+
+        case "<": // less than
           return Number(value) < Number(filterValue);
-        case "<=":
+
+        case "<=": // less than or equal
           return Number(value) <= Number(filterValue);
+
         default:
           return true;
       }
     });
   });
 };
+
 
 const ReusableTable = ({
   data, // @array
@@ -214,12 +225,13 @@ const ReusableTable = ({
   deleteOnRowStyle, // @style object
   deleteOnCellStyle, // @style object
   size = "middle", // @large | middle | small
-  enableFilter = true,
+  enableFilter = true, // @boolean
+  filteredData = [], // @array
+  setFilteredData = console.log("Set setFilteredDataFunction please!") // @function()
 }) => {
   const [filters, setFilters] = useState([]);
   const [appliedFilters, setAppliedFilters] = useState([]);
   const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
-  const [filteredData, setFilteredData] = useState([]);
 
   // Data veya uygulanmış filtreler değiştiğinde filteredData'yı güncelle
   useEffect(() => {
@@ -229,7 +241,8 @@ const ReusableTable = ({
   const filterOperators = [
     { value: "=", label: "equals" },
     { value: "==", label: "like operator" },
-    { value: "!==", label: "not equal" },
+    { value: "!=", label: "not equal" },
+    { value: "!==", label: "not like operator" },
     { value: ">", label: "grater than" },
     { value: ">=", label: "grater than or equal" },
     { value: "<", label: "less than" },
