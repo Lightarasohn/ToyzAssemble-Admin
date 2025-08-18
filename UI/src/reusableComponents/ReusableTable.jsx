@@ -8,11 +8,13 @@ import {
   Input,
   Popover,
   Select,
+  Statistic,
   Table,
   Tag,
   theme,
 } from "antd";
 import React, { useState, useEffect } from "react";
+import CountUp from "react-countup";
 
 const addFunctionalityColumns = (
   data,
@@ -155,28 +157,40 @@ const applyFilters = (data, filters) => {
     return data;
   }
 
-  return data.filter(record => {
-    return filters.every(filter => {
+  return data.filter((record) => {
+    return filters.every((filter) => {
       const value = getValueByDataIndex(record, filter.name);
       const filterValue = filter.value;
 
       // Boş filter değeri varsa o filtreyi atla
-      if (filterValue === "" || filterValue === null || filterValue === undefined) {
+      if (
+        filterValue === "" ||
+        filterValue === null ||
+        filterValue === undefined
+      ) {
         return true;
       }
 
       switch (filter.operator) {
         case "=": // equals
-          return String(value).toLowerCase() === String(filterValue).toLowerCase();
+          return (
+            String(value).toLowerCase() === String(filterValue).toLowerCase()
+          );
 
         case "==": // like
-          return String(value).toLowerCase().includes(String(filterValue).toLowerCase());
+          return String(value)
+            .toLowerCase()
+            .includes(String(filterValue).toLowerCase());
 
         case "!=": // not equal
-          return String(value).toLowerCase() !== String(filterValue).toLowerCase();
+          return (
+            String(value).toLowerCase() !== String(filterValue).toLowerCase()
+          );
 
         case "!==": // not like
-          return !String(value).toLowerCase().includes(String(filterValue).toLowerCase());
+          return !String(value)
+            .toLowerCase()
+            .includes(String(filterValue).toLowerCase());
 
         case ">": // greater than
           return Number(value) > Number(filterValue);
@@ -197,8 +211,8 @@ const applyFilters = (data, filters) => {
   });
 };
 
-
 const ReusableTable = ({
+  tableTitle, // @string
   data, // @array
   columns, // @array
   loading = true, // @boolean
@@ -227,11 +241,16 @@ const ReusableTable = ({
   size = "middle", // @large | middle | small
   enableFilter = true, // @boolean
   filteredData = [], // @array
-  setFilteredData = console.log("Set setFilteredDataFunction please!") // @function()
+  setFilteredData = console.log("Set setFilteredDataFunction please!"), // @function()
 }) => {
   const [filters, setFilters] = useState([]);
   const [appliedFilters, setAppliedFilters] = useState([]);
   const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
+  const formatter = (value) => {
+    return <CountUp end={value} seperator=","></CountUp>;
+  };
 
   // Data veya uygulanmış filtreler değiştiğinde filteredData'yı güncelle
   useEffect(() => {
@@ -250,7 +269,9 @@ const ReusableTable = ({
   ];
 
   const handleAddFilter = () => {
-    const firstFilterableColumn = columns.find(col => col.dataIndex && col.title !== "");
+    const firstFilterableColumn = columns.find(
+      (col) => col.dataIndex && col.title !== ""
+    );
     let newFilter = {
       key: filters.length,
       name: firstFilterableColumn ? firstFilterableColumn.dataIndex : "",
@@ -263,7 +284,7 @@ const ReusableTable = ({
   const handleRemoveFilter = (item) => {
     const newFilters = filters.filter((x) => x.key !== item.key);
     setFilters(newFilters);
-    
+
     // Eğer silinen filter uygulanmış filtrelerde varsa, onu da kaldır ve yeniden uygula
     const newAppliedFilters = appliedFilters.filter((x) => x.key !== item.key);
     setAppliedFilters(newAppliedFilters);
@@ -271,18 +292,22 @@ const ReusableTable = ({
   };
 
   const handleFilterChange = (filterKey, field, value) => {
-  // Eğer field name ise, uygun dataIndex tipini bul
-  if (field === "name") {
-    const col = columns.find(c => getColumnDisplayValue(c.dataIndex) === value);
-    setFilters(filters.map(f =>
-      f.key === filterKey ? { ...f, name: col ? col.dataIndex : value } : f
-    ));
-  } else {
-    setFilters(filters.map(f =>
-      f.key === filterKey ? { ...f, [field]: value } : f
-    ));
-  }
-};
+    // Eğer field name ise, uygun dataIndex tipini bul
+    if (field === "name") {
+      const col = columns.find(
+        (c) => getColumnDisplayValue(c.dataIndex) === value
+      );
+      setFilters(
+        filters.map((f) =>
+          f.key === filterKey ? { ...f, name: col ? col.dataIndex : value } : f
+        )
+      );
+    } else {
+      setFilters(
+        filters.map((f) => (f.key === filterKey ? { ...f, [field]: value } : f))
+      );
+    }
+  };
 
   const handleApplyFilters = () => {
     setAppliedFilters([...filters]);
@@ -291,7 +316,7 @@ const ReusableTable = ({
 
   const getColumnDisplayValue = (dataIndex) => {
     if (Array.isArray(dataIndex)) {
-      return dataIndex.join('.');
+      return dataIndex.join(".");
     }
     return dataIndex;
   };
@@ -334,129 +359,194 @@ const ReusableTable = ({
       }}
     >
       {enableFilter ? (
-        <Popover
-          content={
-            <>
-              {filters.length ? (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px",
-                    minWidth: "300px"
-                  }}
-                >
-                  {filters.map((filter) => (
-                    <Tag
-                      key={filter.key}
-                      closable={true}
-                      onClose={() => handleRemoveFilter(filter)}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <div
+            style={{
+              display:"flex",
+              flex:100
+            }}
+          >
+            <Statistic
+              value={filteredData.length}
+              title={tableTitle}
+              formatter={formatter}
+            />
+          </div>
+          <div
+            style={{
+              display:"flex",
+            }}
+          >
+            <Popover
+              content={
+                <>
+                  {filters.length ? (
+                    <div
                       style={{
-                        display:"flex", flexDirection: "row",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "8px",
+                        minWidth: "300px",
                       }}
                     >
-                      <div style={{ display: "flex", flexDirection: "row", gap: "4px" }}>
-                        <Select
-                          value={getColumnDisplayValue(filter.name)}
-                          onChange={(value) => handleFilterChange(filter.key, 'name', value)}
-                          options={columns
-                            .filter(col => col.dataIndex && col.title !== "")
-                            .map(col => ({ 
-                              value: getColumnDisplayValue(col.dataIndex), 
-                              label: col.title,
-                              rawDataIndex: col.dataIndex
-                            }))}
-                          onSelect={(item) => (console.log(item))}
-                          optionRender={(option) => option.data.label}
-                          labelRender={(option) => option.displayValue}
-                          style={{ width: "100%" }}
+                      {filters.map((filter) => (
+                        <Tag
+                          key={filter.key}
+                          closable={true}
+                          onClose={() => handleRemoveFilter(filter)}
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              gap: "4px",
+                            }}
+                          >
+                            <Select
+                              value={getColumnDisplayValue(filter.name)}
+                              onChange={(value) =>
+                                handleFilterChange(filter.key, "name", value)
+                              }
+                              options={columns
+                                .filter(
+                                  (col) => col.dataIndex && col.title !== ""
+                                )
+                                .map((col) => ({
+                                  value: getColumnDisplayValue(col.dataIndex),
+                                  label: col.title,
+                                  rawDataIndex: col.dataIndex,
+                                }))}
+                              style={{ width: "100%" }}
+                              size="small"
+                              popupMatchSelectWidth={false}
+                            />
+                            <Select
+                              value={filter.operator}
+                              onChange={(value) =>
+                                handleFilterChange(
+                                  filter.key,
+                                  "operator",
+                                  value
+                                )
+                              }
+                              options={filterOperators.map((op) => ({
+                                value: op.value,
+                                label: `[${op.value}] ${op.label}`,
+                              }))}
+                              labelRender={(option) => option.value}
+                              size="small"
+                              optionRender={(option) =>
+                                `[${option.value}] ${
+                                  option.data.label.split("] ")[1]
+                                }`
+                              }
+                              popupMatchSelectWidth={false}
+                            />
+                            <Input
+                              value={filter.value}
+                              onChange={(e) =>
+                                handleFilterChange(
+                                  filter.key,
+                                  "value",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Filter value"
+                              size="small"
+                            />
+                          </div>
+                        </Tag>
+                      ))}
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "8px",
+                          marginTop: "8px",
+                        }}
+                      >
+                        <Button
+                          icon={<PlusOutlined />}
                           size="small"
-                          popupMatchSelectWidth={false}
-                        />
-                        <Select
-                          value={filter.operator}
-                          onChange={(value) => handleFilterChange(filter.key, 'operator', value)}
-                          options={filterOperators.map(op => ({
-                            value: op.value,
-                            label: `[${op.value}] ${op.label}`
-                          }))}
-                          labelRender={option => option.value}
-                          
+                          type="text"
+                          onClick={() => handleAddFilter()}
+                        >
+                          Add Filter
+                        </Button>
+                        <Button
+                          icon={<SaveOutlined />}
                           size="small"
-                          optionRender={(option) => `[${option.value}] ${option.data.label.split('] ')[1]}`}
-                          popupMatchSelectWidth={false}
-                        />
-                        <Input
-                          value={filter.value}
-                          onChange={(e) => handleFilterChange(filter.key, 'value', e.target.value)}
-                          placeholder="Filter value"
-                          size="small"
-                        />
+                          type="text"
+                          disabled={filters.length === 0}
+                          onClick={handleApplyFilters}
+                        >
+                          Apply Filter
+                        </Button>
                       </div>
-                    </Tag>
-                  ))}
-                  <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
-                    <Button
-                      icon={<PlusOutlined />}
-                      size="small"
-                      type="text"
-                      onClick={() => handleAddFilter()}
-                    >
-                      Add Filter
-                    </Button>
-                    <Button 
-                      icon={<SaveOutlined />}
-                      size="small"
-                      type="text"
-                      disabled={filters.length === 0}
-                      onClick={handleApplyFilters}
-                    >
-                      Apply Filter
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  Add a column below to filter the view
-                  <Divider style={{ padding: "0px" }}></Divider>
-                  <Button
-                    icon={<PlusOutlined />}
-                    size="small"
-                    type="text"
-                    onClick={() => handleAddFilter()}
-                  >
-                    Add Filter
-                  </Button>
-                  <Button icon={<SaveOutlined />}
-                    size="small"
-                    type="text"
-                    disabled={filters.length === 0}
-                    onClick={() => handleApplyFilters()}
-                  >
-                    Apply Filter
-                  </Button>
+                    </div>
+                  ) : (
+                    <>
+                      Add a column below to filter the view
+                      <Divider style={{ padding: "0px" }}></Divider>
+                      <Button
+                        icon={<PlusOutlined />}
+                        size="small"
+                        type="text"
+                        onClick={() => handleAddFilter()}
+                      >
+                        Add Filter
+                      </Button>
+                      <Button
+                        icon={<SaveOutlined />}
+                        size="small"
+                        type="text"
+                        disabled={filters.length === 0}
+                        onClick={() => handleApplyFilters()}
+                      >
+                        Apply Filter
+                      </Button>
+                    </>
+                  )}
                 </>
-              )}
-            </>
-          }
-          title={filters.length ? "" : "No filters applied to this table"}
-          trigger={"click"}
-          arrow={false}
-          autoAdjustOverflow={true}
-          fresh={false}
-          destroyOnHidden={false}
-          placement="bottomLeft"
-        >
-          <Button
-            style={{
-              maxWidth: "13%",
-            }}
-            icon={<FilterFilled />}
-          >
-            Filter {appliedFiltersCount > 0 ? `(${appliedFiltersCount})` : ""}
-          </Button>
-        </Popover>
-      ) : null}
+              }
+              title={filters.length ? "" : "No filters applied to this table"}
+              trigger="click"
+              arrow={false}
+              autoAdjustOverflow={true}
+              fresh={false}
+              destroyOnHidden={false}
+              open={popoverOpen}
+              onOpenChange={setPopoverOpen}
+              placement="bottomRight"
+            >
+              <Button
+                style={{
+                  justifySelf:"center",
+                  alignSelf:"flex-end"
+                }}
+                icon={<FilterFilled />}
+              >
+                Filter{" "}
+                {appliedFiltersCount > 0 ? `(${appliedFiltersCount})` : ""}
+              </Button>
+            </Popover>
+          </div>
+        </div>
+      ) : 
+      <Statistic
+              value={filteredData.length}
+              title={tableTitle}
+              formatter={formatter}
+            />
+      }
       <Table
         dataSource={filteredData}
         columns={columnsWithSorter}
