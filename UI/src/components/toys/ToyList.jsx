@@ -12,6 +12,7 @@ const ToyList = ({
   setIsFetchList,
 }) => {
   const [toys, setToys] = useState([]);
+  const [filteredToys, setFilteredToys] = useState([]);
   const [listLoading, setListLoading] = useState(true);
 
   useEffect(() => {
@@ -50,10 +51,10 @@ const ToyList = ({
   ];
 
   const handleCheckAll = () => {
-    if (selectedToys.length === toys.length) {
+    if (selectedToys.length === filteredToys.length) {
       setSelectedToys([]);
     } else {
-      setSelectedToys(toys);
+      setSelectedToys(filteredToys);
     }
   };
 
@@ -75,6 +76,9 @@ const ToyList = ({
       deleteButtonFunction={(record) => console.log("delete:", record)}
       deleteInsider={<DeleteOutlined />}
       size="large"
+      enableFilter={true}
+      filteredData={filteredToys}
+      setFilteredData={setFilteredToys}
     />
   );
 };
