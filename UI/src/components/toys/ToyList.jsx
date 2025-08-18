@@ -60,6 +60,7 @@ const ToyList = ({
 
   return (
     <ReusableTable
+      tableTitle={"Toyz"}
       data={toys}
       columns={toyColumns}
       loading={listLoading}
