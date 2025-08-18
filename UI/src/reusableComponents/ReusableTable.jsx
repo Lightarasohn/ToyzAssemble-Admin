@@ -12,7 +12,7 @@ import {
   Tag,
   theme,
 } from "antd";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const addFunctionalityColumns = (
   data,
@@ -149,6 +149,44 @@ const getValueByDataIndex = (record, dataIndex) => {
   return record[dataIndex];
 };
 
+// Filtreleme fonksiyonu
+const applyFilters = (data, filters) => {
+  if (!filters || filters.length === 0) {
+    return data;
+  }
+
+  return data.filter(record => {
+    return filters.every(filter => {
+      const value = getValueByDataIndex(record, filter.name);
+      const filterValue = filter.value;
+
+      // Boş filter değeri varsa o filtreyi atla
+      if (!filterValue && filterValue !== 0) {
+        return true;
+      }
+
+      switch (filter.operator) {
+        case "=":
+          return String(value).toLowerCase() === String(filterValue).toLowerCase();
+        case "==":
+          return String(value).toLowerCase().includes(String(filterValue).toLowerCase());
+        case "!==":
+          return String(value).toLowerCase() !== String(filterValue).toLowerCase();
+        case ">":
+          return Number(value) > Number(filterValue);
+        case ">=":
+          return Number(value) >= Number(filterValue);
+        case "<":
+          return Number(value) < Number(filterValue);
+        case "<=":
+          return Number(value) <= Number(filterValue);
+        default:
+          return true;
+      }
+    });
+  });
+};
+
 const ReusableTable = ({
   data, // @array
   columns, // @array
@@ -177,10 +215,76 @@ const ReusableTable = ({
   deleteOnCellStyle, // @style object
   size = "middle", // @large | middle | small
   enableFilter = true,
-  onFiltersApply = () => console.log("Set onFiltersApply function please!"), // @function(filters)
 }) => {
+  const [filters, setFilters] = useState([]);
+  const [appliedFilters, setAppliedFilters] = useState([]);
+  const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
+  const [filteredData, setFilteredData] = useState([]);
+
+  // Data veya uygulanmış filtreler değiştiğinde filteredData'yı güncelle
+  useEffect(() => {
+    setFilteredData(applyFilters(data, appliedFilters));
+  }, [data, appliedFilters]);
+
+  const filterOperators = [
+    { value: "=", label: "equals" },
+    { value: "==", label: "like operator" },
+    { value: "!==", label: "not equal" },
+    { value: ">", label: "grater than" },
+    { value: ">=", label: "grater than or equal" },
+    { value: "<", label: "less than" },
+    { value: "<=", label: "less than or equal" },
+  ];
+
+  const handleAddFilter = () => {
+    const firstFilterableColumn = columns.find(col => col.dataIndex && col.title !== "");
+    let newFilter = {
+      key: filters.length,
+      name: firstFilterableColumn ? firstFilterableColumn.dataIndex : "",
+      operator: filterOperators[0].value,
+      value: "",
+    };
+    setFilters([...filters, newFilter]);
+  };
+
+  const handleRemoveFilter = (item) => {
+    const newFilters = filters.filter((x) => x.key !== item.key);
+    setFilters(newFilters);
+    
+    // Eğer silinen filter uygulanmış filtrelerde varsa, onu da kaldır ve yeniden uygula
+    const newAppliedFilters = appliedFilters.filter((x) => x.key !== item.key);
+    setAppliedFilters(newAppliedFilters);
+    setAppliedFiltersCount(newAppliedFilters.length);
+  };
+
+  const handleFilterChange = (filterKey, field, value) => {
+  // Eğer field name ise, uygun dataIndex tipini bul
+  if (field === "name") {
+    const col = columns.find(c => getColumnDisplayValue(c.dataIndex) === value);
+    setFilters(filters.map(f =>
+      f.key === filterKey ? { ...f, name: col ? col.dataIndex : value } : f
+    ));
+  } else {
+    setFilters(filters.map(f =>
+      f.key === filterKey ? { ...f, [field]: value } : f
+    ));
+  }
+};
+
+  const handleApplyFilters = () => {
+    setAppliedFilters([...filters]);
+    setAppliedFiltersCount(filters.length);
+  };
+
+  const getColumnDisplayValue = (dataIndex) => {
+    if (Array.isArray(dataIndex)) {
+      return dataIndex.join('.');
+    }
+    return dataIndex;
+  };
+
   const newColumns = addFunctionalityColumns(
-    data,
+    filteredData,
     columns,
     editEnabled,
     editButtonFunciton,
@@ -205,48 +309,6 @@ const ReusableTable = ({
   );
 
   const columnsWithSorter = addSorterToColumns(newColumns);
-  const [filters, setFilters] = useState([]);
-  const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
-
-  const filterOperators = [
-    { value: "=", label: "equals" },
-    { value: "==", label: "like operator" },
-    { value: "!==", label: "not equal" },
-    { value: ">", label: "grater than" },
-    { value: ">=", label: "grater than or equal" },
-    { value: "<", label: "less than" },
-    { value: "<=", label: "less than or equal" },
-  ];
-
-  const handleAddFilter = () => {
-    let newFilter = {
-      key: filters.length,
-      name: columns[0].dataIndex,
-      operator: filterOperators[0].value,
-      value: "",
-    };
-    setFilters([...filters, newFilter]);
-  };
-
-  const handleRemoveFilter = (item) => {
-    setFilters(filters.filter((x) => x.key !== item.key));
-    if(filters.length == 1){ // useState'in set metotu fonksiyon bittikten sonra çalışır.
-      setAppliedFiltersCount(0);
-    }
-  };
-
-  const handleFilterChange = (filterKey, field, value) => {
-    setFilters(filters.map(filter => 
-      filter.key === filterKey 
-        ? { ...filter, [field]: value }
-        : filter
-    ));
-  };
-
-  const handleApplyFilters = () => {
-    onFiltersApply(filters);
-    setAppliedFiltersCount(filters.length)
-  };
 
   return (
     <div
@@ -282,16 +344,21 @@ const ReusableTable = ({
                     >
                       <div style={{ display: "flex", flexDirection: "row", gap: "4px" }}>
                         <Select
-                          value={filter.name}
+                          value={getColumnDisplayValue(filter.name)}
                           onChange={(value) => handleFilterChange(filter.key, 'name', value)}
                           options={columns
                             .filter(col => col.dataIndex && col.title !== "")
                             .map(col => ({ 
-                              value: col.dataIndex, 
-                              label: col.title 
+                              value: getColumnDisplayValue(col.dataIndex), 
+                              label: col.title,
+                              rawDataIndex: col.dataIndex
                             }))}
+                          onSelect={(item) => (console.log(item))}
+                          optionRender={(option) => option.data.label}
+                          labelRender={(option) => option.displayValue}
                           style={{ width: "100%" }}
                           size="small"
+                          popupMatchSelectWidth={false}
                         />
                         <Select
                           value={filter.operator}
@@ -300,9 +367,11 @@ const ReusableTable = ({
                             value: op.value,
                             label: `[${op.value}] ${op.label}`
                           }))}
-                          style={{ width: "100%" }}
+                          labelRender={option => option.value}
+                          
                           size="small"
                           optionRender={(option) => `[${option.value}] ${option.data.label.split('] ')[1]}`}
+                          popupMatchSelectWidth={false}
                         />
                         <Input
                           value={filter.value}
@@ -376,7 +445,7 @@ const ReusableTable = ({
         </Popover>
       ) : null}
       <Table
-        dataSource={data}
+        dataSource={filteredData}
         columns={columnsWithSorter}
         rowKey={rowKey}
         loading={loading}
