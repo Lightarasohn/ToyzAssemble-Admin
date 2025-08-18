@@ -1,5 +1,17 @@
-import { FilterFilled, PlusOutlined } from "@ant-design/icons";
-import { Button, Card, Checkbox, Divider, Popover, Select, Table, Tag } from "antd";
+import { FilterFilled, PlusOutlined, SaveOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Card,
+  Checkbox,
+  Divider,
+  Form,
+  Input,
+  Popover,
+  Select,
+  Table,
+  Tag,
+  theme,
+} from "antd";
 import React, { useState } from "react";
 
 const addFunctionalityColumns = (
@@ -101,7 +113,6 @@ const addFunctionalityColumns = (
       }),
     });
   }
-
   return newColumns;
 };
 
@@ -115,7 +126,6 @@ const addSorterToColumns = (columns) => {
         sorter: (a, b) => {
           const aValue = getValueByDataIndex(a, col.dataIndex);
           const bValue = getValueByDataIndex(b, col.dataIndex);
-
           if (typeof aValue === "string" && typeof bValue === "string") {
             return aValue.localeCompare(bValue);
           }
@@ -167,6 +177,7 @@ const ReusableTable = ({
   deleteOnCellStyle, // @style object
   size = "middle", // @large | middle | small
   enableFilter = true,
+  onFiltersApply = () => console.log("Set onFiltersApply function please!"), // @function(filters)
 }) => {
   const newColumns = addFunctionalityColumns(
     data,
@@ -192,18 +203,51 @@ const ReusableTable = ({
     deleteOnRowStyle,
     deleteOnCellStyle
   );
-  const columnsWithSorter = addSorterToColumns(newColumns);
 
-  const [filters, setFilters] = useState([])
+  const columnsWithSorter = addSorterToColumns(newColumns);
+  const [filters, setFilters] = useState([]);
+  const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
+
+  const filterOperators = [
+    { value: "=", label: "equals" },
+    { value: "==", label: "like operator" },
+    { value: "!==", label: "not equal" },
+    { value: ">", label: "grater than" },
+    { value: ">=", label: "grater than or equal" },
+    { value: "<", label: "less than" },
+    { value: "<=", label: "less than or equal" },
+  ];
 
   const handleAddFilter = () => {
     let newFilter = {
-      name: columns[0].title,
-      operator: "=",
-      value: null
-    }
+      key: filters.length,
+      name: columns[0].dataIndex,
+      operator: filterOperators[0].value,
+      value: "",
+    };
     setFilters([...filters, newFilter]);
-  }
+  };
+
+  const handleRemoveFilter = (item) => {
+    setFilters(filters.filter((x) => x.key !== item.key));
+    if(filters.length == 1){ // useState'in set metotu fonksiyon bittikten sonra çalışır.
+      setAppliedFiltersCount(0);
+    }
+  };
+
+  const handleFilterChange = (filterKey, field, value) => {
+    setFilters(filters.map(filter => 
+      filter.key === filterKey 
+        ? { ...filter, [field]: value }
+        : filter
+    ));
+  };
+
+  const handleApplyFilters = () => {
+    onFiltersApply(filters);
+    setAppliedFiltersCount(filters.length)
+  };
+
   return (
     <div
       style={{
@@ -218,19 +262,99 @@ const ReusableTable = ({
         <Popover
           content={
             <>
-              {filters.length ? 
-              <>
-                {filters.map(filter => 
-                  <Tag>
-                  </Tag>
-                )}
-              </> 
-              : 
-              <>
-                Add a column below to filter the view
-                <Divider style={{padding:"0px"}}></Divider>
-                <Button icon={<PlusOutlined />} size="small" type="text" onClick={() => handleAddFilter()}>Add Filter</Button>
-              </>}
+              {filters.length ? (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    minWidth: "300px"
+                  }}
+                >
+                  {filters.map((filter) => (
+                    <Tag
+                      key={filter.key}
+                      closable={true}
+                      onClose={() => handleRemoveFilter(filter)}
+                      style={{
+                        display:"flex", flexDirection: "row",
+                      }}
+                    >
+                      <div style={{ display: "flex", flexDirection: "row", gap: "4px" }}>
+                        <Select
+                          value={filter.name}
+                          onChange={(value) => handleFilterChange(filter.key, 'name', value)}
+                          options={columns
+                            .filter(col => col.dataIndex && col.title !== "")
+                            .map(col => ({ 
+                              value: col.dataIndex, 
+                              label: col.title 
+                            }))}
+                          style={{ width: "100%" }}
+                          size="small"
+                        />
+                        <Select
+                          value={filter.operator}
+                          onChange={(value) => handleFilterChange(filter.key, 'operator', value)}
+                          options={filterOperators.map(op => ({
+                            value: op.value,
+                            label: `[${op.value}] ${op.label}`
+                          }))}
+                          style={{ width: "100%" }}
+                          size="small"
+                          optionRender={(option) => `[${option.value}] ${option.data.label.split('] ')[1]}`}
+                        />
+                        <Input
+                          value={filter.value}
+                          onChange={(e) => handleFilterChange(filter.key, 'value', e.target.value)}
+                          placeholder="Filter value"
+                          size="small"
+                        />
+                      </div>
+                    </Tag>
+                  ))}
+                  <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                    <Button
+                      icon={<PlusOutlined />}
+                      size="small"
+                      type="text"
+                      onClick={() => handleAddFilter()}
+                    >
+                      Add Filter
+                    </Button>
+                    <Button 
+                      icon={<SaveOutlined />}
+                      size="small"
+                      type="text"
+                      disabled={filters.length === 0}
+                      onClick={handleApplyFilters}
+                    >
+                      Apply Filter
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  Add a column below to filter the view
+                  <Divider style={{ padding: "0px" }}></Divider>
+                  <Button
+                    icon={<PlusOutlined />}
+                    size="small"
+                    type="text"
+                    onClick={() => handleAddFilter()}
+                  >
+                    Add Filter
+                  </Button>
+                  <Button icon={<SaveOutlined />}
+                    size="small"
+                    type="text"
+                    disabled={filters.length === 0}
+                    onClick={() => handleApplyFilters()}
+                  >
+                    Apply Filter
+                  </Button>
+                </>
+              )}
             </>
           }
           title={filters.length ? "" : "No filters applied to this table"}
@@ -243,11 +367,11 @@ const ReusableTable = ({
         >
           <Button
             style={{
-              maxWidth: "10%",
+              maxWidth: "13%",
             }}
             icon={<FilterFilled />}
           >
-            Filter
+            Filter {appliedFiltersCount > 0 ? `(${appliedFiltersCount})` : ""}
           </Button>
         </Popover>
       ) : null}
