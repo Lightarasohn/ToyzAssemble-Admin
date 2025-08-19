@@ -1,74 +1,82 @@
 import { useEffect, useState } from "react";
 import ToyList from "./ToyList";
-import { Card, Tag } from "antd";
-import ToyCheckedList from "./ToyCheckedList";
-import ToyCheckedCard from "./ToyCheckedCard";
 import ReusableCheckedCard from "../../reusableComponents/ReusableCheckedCard";
 import GetAllToyTypesAPI from "../../api/toyType/GetAllToyTypesAPI";
 import GetAllRarityTypesAPI from "../../api/rarityType/GetAllRarityTypesAPI";
 import { useNotification } from "../../services/NotificationService";
 import UpdateSelectedToysAPI from "../../api/toyService/UpdateSelectedToysAPI";
+import { Button, Card, Carousel, Divider, Typography } from "antd";
 
 const ToyMainPage = () => {
+  const [toys, setToys] = useState([]);
   const [selectedToys, setSelectedToys] = useState([]);
   const [isFetchList, setIsFetchList] = useState(true);
   const [rarityTypes, setRarityTypes] = useState([]);
   const [toyTypes, setToyTypes] = useState([]);
+  const [editingToy, setEditingToy] = useState(null);
   const notification = useNotification();
-  
-  const formFields = [
-              { 
-                name:"price",
-                label:"Price",
-                type:"number",
-                placeholder:"10.10",
-                min: 0,
-                max: 100,
-                addOnBefore: "$",
-                addOnAfter: "float",
-                flex: 1,
-              },
-              {
-                name:"luckPercentage",
-                label:"Luck Percentage",
-                type:"number",
-                placeholder:"0.42",
-                min: 0,
-                max: 100,
-                addOnBefore:"%",
-                addOnAfter:"float",
-                flex:1
-              },
-              {
-                name:"rarityTypeId",
-                label:"Rarity",
-                type:"select",
-                placeholder:"Common, Rare, Epic...",
-                flex:1,
-                selectKey:"rarityTypes"
-              },
-              {
-                name:"toyTypeId",
-                label:"Toy Type",
-                type:"select",
-                placeholder:"Classic, Special, Accessory...",
-                flex:1,
-                selectKey:"toyTypes"
-              }
-            ]
 
-  const handleFinish = async (val) => {
-    const normalizedVal = Object.fromEntries(
+  const handleEdit = (record) => {
+    setEditingToy(record);
+  }
+
+  const formFields = [
+    {
+      name: "price",
+      label: "Price",
+      type: "number",
+      placeholder: "10.10",
+      min: 0,
+      max: 100,
+      addOnBefore: "$",
+      addOnAfter: "float",
+      flex: 1,
+    },
+    {
+      name: "luckPercentage",
+      label: "Luck Percentage",
+      type: "number",
+      placeholder: "0.42",
+      min: 0,
+      max: 100,
+      addOnBefore: "%",
+      addOnAfter: "float",
+      flex: 1,
+    },
+    {
+      name: "rarityTypeId",
+      label: "Rarity",
+      type: "select",
+      placeholder: "Common, Rare, Epic...",
+      flex: 1,
+      selectKey: "rarityTypes",
+    },
+    {
+      name: "toyTypeId",
+      label: "Toy Type",
+      type: "select",
+      placeholder: "Classic, Special, Accessory...",
+      flex: 1,
+      selectKey: "toyTypes",
+    },
+  ];
+
+  const normalizeFormValues = (val) => {
+    return Object.fromEntries(
       Object.entries(val).map(([key, value]) => [
         key,
         value === undefined ? null : value,
       ])
     );
+  };
+
+
+  const handleFinish = async (val) => {
+    const normalizedVal = normalizeFormValues(val);
     const apiVal = {
       idList: selectedToys.map((x) => x.id),
       updateDto: normalizedVal,
     };
-    console.log(apiVal);
     try {
       await UpdateSelectedToysAPI(apiVal);
       setIsFetchList(true);
@@ -88,7 +96,7 @@ const ToyMainPage = () => {
         duration: 5,
         showProgress: true,
         pauseOnHover: true,
-        placement: "topRight"
+        placement: "topRight",
       });
     }
   };
@@ -142,6 +150,10 @@ const ToyMainPage = () => {
     setSelectedToys([]);
   };
 
+  useEffect(() => {
+    console.log(toys)
+  },[toys])
+
   return (
     <div
       style={{
@@ -152,8 +164,7 @@ const ToyMainPage = () => {
     >
       {selectedToys.length ? (
         <>
-          
-          <ReusableCheckedCard 
+          <ReusableCheckedCard
             selectedItems={selectedToys}
             handleSelection={handleSelection}
             clearSelection={clearSelection}
@@ -163,17 +174,16 @@ const ToyMainPage = () => {
             clearButtonText="Clear All"
             updateFormTitle="Update Form"
             formFields={formFields}
-            selectOptions={
-              {
-                rarityTypes: rarityTypes,
-                toyTypes: toyTypes
-              }
-            }
+            selectOptions={{
+              rarityTypes: rarityTypes,
+              toyTypes: toyTypes,
+            }}
             leftCardFlex={3}
             rightCardFlex={2}
             showUpdateForm={true}
             itemDisplayFunction={(toy) =>
-              `${toy.name} | $${toy.price} | ${toy.rarity.name} | ${toy.toyType.name}`}
+              `${toy.name} | $${toy.price} | ${toy.rarity.name} | ${toy.toyType.name}`
+            }
           />
         </>
       ) : null}
@@ -182,6 +192,7 @@ const ToyMainPage = () => {
           display: "flex",
           justifyContent: "flex-start",
           alignContent: "center",
+          gap:"16px"
         }}
       >
         <ToyList
@@ -190,7 +201,52 @@ const ToyMainPage = () => {
           setSelectedToys={setSelectedToys}
           isFetchList={isFetchList}
           setIsFetchList={setIsFetchList}
-        ></ToyList>
+          toys={toys}
+          setToys={setToys}
+          handleEdit={handleEdit}
+        />
+        {/*handleEdit*/}
+        {
+          editingToy != null ?
+          <Card
+          style={{
+            display:"flex",
+            flexDirection:"column",
+            width:"100%",
+            maxHeight:"100%",
+            marginTop:"70px",
+            marginBottom:"70px",
+            overflow:"hidden",
+            flexShrink:1,
+          }}
+        >
+          <div
+            style={{
+              display:"flex",
+              flexDirection:"row",
+              justifyContent:"space-between"
+            }}
+          >
+            <Typography.Title>{editingToy.name}</Typography.Title>
+            <Button style={{display:"flex", justifySelf:"flex-end"}} onClick={() => handleEdit(null)}>Close</Button>
+          </div>
+          <Divider></Divider>
+          <div
+          style={{
+            display:"flex",
+            justifyContent:"center",
+            alignContent:"center"
+          }}
+          >
+          <Carousel style={{display:"flex", width:"300px", }} arrows infinite={false}>
+            {editingToy.imageUrls.map(img => 
+              <img src={img}></img>
+            )}
+          </Carousel>
+          </div>
+        </Card>
+        : null
+        }
       </div>
     </div>
   );

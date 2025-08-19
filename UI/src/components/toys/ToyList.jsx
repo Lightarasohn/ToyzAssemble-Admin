@@ -10,8 +10,10 @@ const ToyList = ({
   setSelectedToys,
   isFetchList,
   setIsFetchList,
+  toys, 
+  setToys,
+  handleEdit
 }) => {
-  const [toys, setToys] = useState([]);
   const [filteredToys, setFilteredToys] = useState([]);
   const [listLoading, setListLoading] = useState(true);
 
@@ -59,28 +61,34 @@ const ToyList = ({
   };
 
   return (
-    <ReusableTable
-      tableTitle={"Toyz"}
-      data={toys}
-      columns={toyColumns}
-      loading={listLoading}
-      pagination={{}}
-      editEnabled={true}
-      editButtonFunciton={(record) => console.log("edit:", record)}
-      editInsider={<EditOutlined />}
-      checkEnabled={true}
-      checkAllEnabled={true}
-      checkAllOnChangeFunction={() => handleCheckAll()}
-      checkOnChangeFunction={(record) => handleSelection(record)}
-      checkedList={selectedToys}
-      deleteEnabled={true}
-      deleteButtonFunction={(record) => console.log("delete:", record)}
-      deleteInsider={<DeleteOutlined />}
-      size="large"
-      enableFilter={true}
-      filteredData={filteredToys}
-      setFilteredData={setFilteredToys}
-    />
+    <div
+      style={{
+        display:"flex",
+      }}
+    >
+      <ReusableTable
+        tableTitle={"Toyz"}
+        data={toys}
+        columns={toyColumns}
+        loading={listLoading}
+        pagination={{}}
+        editEnabled={true}
+        editButtonFunciton={(record) => handleEdit(record)}
+        editInsider={<EditOutlined />}
+        checkEnabled={true}
+        checkAllEnabled={true}
+        checkAllOnChangeFunction={() => handleCheckAll()}
+        checkOnChangeFunction={(record) => handleSelection(record)}
+        checkedList={selectedToys}
+        deleteEnabled={true}
+        deleteButtonFunction={(record) => console.log("delete:", record)}
+        deleteInsider={<DeleteOutlined />}
+        size="large"
+        enableFilter={true}
+        filteredData={filteredToys}
+        setFilteredData={setFilteredToys}
+      />
+    </div>
   );
 };
 
