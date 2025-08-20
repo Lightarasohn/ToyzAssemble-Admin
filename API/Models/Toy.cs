@@ -19,6 +19,8 @@ public partial class Toy
 
     public bool Deleted { get; set; }
 
+    public List<string>? ImageUrls { get; set; }
+
     public virtual RarityType Rarity { get; set; } = null!;
 
     public virtual ToyType ToyType { get; set; } = null!;

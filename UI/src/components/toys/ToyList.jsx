@@ -12,7 +12,8 @@ const ToyList = ({
   setIsFetchList,
   toys, 
   setToys,
-  handleEdit
+  handleEdit,
+  handleDeleteButton
 }) => {
   const [filteredToys, setFilteredToys] = useState([]);
   const [listLoading, setListLoading] = useState(true);
@@ -81,7 +82,7 @@ const ToyList = ({
         checkOnChangeFunction={(record) => handleSelection(record)}
         checkedList={selectedToys}
         deleteEnabled={true}
-        deleteButtonFunction={(record) => console.log("delete:", record)}
+        deleteButtonFunction={(record) => handleDeleteButton(record)}
         deleteInsider={<DeleteOutlined />}
         size="large"
         enableFilter={true}

@@ -16,6 +16,8 @@ public partial class PostgresContext : DbContext
     {
     }
 
+    public virtual DbSet<CostType> CostTypes { get; set; }
+
     public virtual DbSet<Package> Packages { get; set; }
 
     public virtual DbSet<PackageRarityType> PackageRarityTypes { get; set; }
@@ -44,6 +46,18 @@ public partial class PostgresContext : DbContext
             .HasPostgresExtension("extensions", "uuid-ossp")
             .HasPostgresExtension("graphql", "pg_graphql")
             .HasPostgresExtension("vault", "supabase_vault");
+
+        modelBuilder.Entity<CostType>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("cost_type_pkey");
+
+            entity.ToTable("cost_type");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .HasColumnName("name");
+        });
 
         modelBuilder.Entity<Package>(entity =>
         {
@@ -112,6 +126,9 @@ public partial class PostgresContext : DbContext
             entity.Property(e => e.Deleted)
                 .HasDefaultValue(false)
                 .HasColumnName("deleted");
+            entity.Property(e => e.ImageUrls)
+                .HasDefaultValueSql("'{}'::text[]")
+                .HasColumnName("image_urls");
             entity.Property(e => e.LuckPercentage)
                 .HasPrecision(5, 2)
                 .HasColumnName("luck_percentage");

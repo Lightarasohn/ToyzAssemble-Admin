@@ -1,11 +1,25 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import ToyList from "./ToyList";
 import ReusableCheckedCard from "../../reusableComponents/ReusableCheckedCard";
 import GetAllToyTypesAPI from "../../api/toyType/GetAllToyTypesAPI";
 import GetAllRarityTypesAPI from "../../api/rarityType/GetAllRarityTypesAPI";
 import { useNotification } from "../../services/NotificationService";
 import UpdateSelectedToysAPI from "../../api/toyService/UpdateSelectedToysAPI";
-import { Button, Card, Carousel, Divider, Typography } from "antd";
+import {
+  Button,
+  Card,
+  Carousel,
+  Divider,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Typography,
+} from "antd";
+import UpdateToyAPI from "../../api/toy/UpdateToyAPI";
+import AddToyAPI from "../../api/toy/AddToyAPI";
+import DeleteToyAPI from "../../api/toy/DeleteToyAPI";
+import ToyEditAddCard from "./ToyEditAddCard";
 
 const ToyMainPage = () => {
   const [toys, setToys] = useState([]);
@@ -14,11 +28,31 @@ const ToyMainPage = () => {
   const [rarityTypes, setRarityTypes] = useState([]);
   const [toyTypes, setToyTypes] = useState([]);
   const [editingToy, setEditingToy] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   const notification = useNotification();
+  const [form] = Form.useForm(); // This form will be shared with ToyEditAddCard
 
-  const handleEdit = (record) => {
-    setEditingToy(record);
-  }
+  const handleEditButton = (record) => {
+    if (record === null) {
+      // Kapatma işlemi
+      setEditingToy(null);
+      setIsEditing(false);
+      form.resetFields();
+    } else {
+      // Edit moduna geçiş
+      setEditingToy(record);
+      setIsEditing(true);
+
+      // Form değerlerini set et
+      form.setFieldsValue({
+        name: record.name,
+        price: record.price,
+        toyTypeId: record.toyTypeId,
+        luckPercentage: record.luckPercentage,
+        rarityId: record.rarityId,
+      });
+    }
+  };
 
   const formFields = [
     {
@@ -61,7 +95,7 @@ const ToyMainPage = () => {
     },
   ];
 
-  const normalizeFormValues = (val) => {
+  const normalizeCheckFormValues = (val) => {
     return Object.fromEntries(
       Object.entries(val).map(([key, value]) => [
         key,
@@ -70,9 +104,8 @@ const ToyMainPage = () => {
     );
   };
 
-
-  const handleFinish = async (val) => {
-    const normalizedVal = normalizeFormValues(val);
+  const handleCheckFinish = async (val) => {
+    const normalizedVal = normalizeCheckFormValues(val);
     const apiVal = {
       idList: selectedToys.map((x) => x.id),
       updateDto: normalizedVal,
@@ -84,15 +117,15 @@ const ToyMainPage = () => {
       notification.success({
         message: "Success",
         description: "Selected toys updated successfully!",
-        duration: 5, // saniye cinsinden
-        showProgress: true, // progress bar göster
-        pauseOnHover: true, // hover'da duraklat
-        placement: "topRight", // konum (isteğe bağlı)
+        duration: 5,
+        showProgress: true,
+        pauseOnHover: true,
+        placement: "topRight",
       });
     } catch {
       notification.error({
         message: "Error",
-        description: "Selectod toys could not be updated!",
+        description: "Selected toys could not be updated!",
         duration: 5,
         showProgress: true,
         pauseOnHover: true,
@@ -150,9 +183,33 @@ const ToyMainPage = () => {
     setSelectedToys([]);
   };
 
-  useEffect(() => {
-    console.log(toys)
-  },[toys])
+  const handleDeleteButton = async (record) => {
+    try {
+      await DeleteToyAPI(record.id);
+      setIsFetchList(true);
+      // Edit edilen oyuncak silinirse edit modundan çık
+      if (editingToy && editingToy.id === record.id) {
+        handleEditButton(null);
+      }
+      notification.success({
+        message: "Success",
+        description: "Toy deleted successfully!",
+        duration: 5,
+        showProgress: true,
+        pauseOnHover: true,
+        placement: "topRight",
+      });
+    } catch {
+      notification.error({
+        message: "Error",
+        description: "Toy could not be deleted!",
+        duration: 5,
+        showProgress: true,
+        pauseOnHover: true,
+        placement: "topRight",
+      });
+    }
+  };
 
   return (
     <div
@@ -168,7 +225,7 @@ const ToyMainPage = () => {
             selectedItems={selectedToys}
             handleSelection={handleSelection}
             clearSelection={clearSelection}
-            handleFinish={handleFinish}
+            handleFinish={handleCheckFinish}
             title={`Selected Toys`}
             updateButtonText="Update Selected Toys"
             clearButtonText="Clear All"
@@ -187,12 +244,13 @@ const ToyMainPage = () => {
           />
         </>
       ) : null}
+
       <div
         style={{
           display: "flex",
           justifyContent: "flex-start",
           alignContent: "center",
-          gap:"16px"
+          gap: "16px",
         }}
       >
         <ToyList
@@ -203,50 +261,22 @@ const ToyMainPage = () => {
           setIsFetchList={setIsFetchList}
           toys={toys}
           setToys={setToys}
-          handleEdit={handleEdit}
+          handleEdit={handleEditButton}
+          handleDeleteButton={handleDeleteButton}
         />
-        {/*handleEdit*/}
-        {
-          editingToy != null ?
-          <Card
-          style={{
-            display:"flex",
-            flexDirection:"column",
-            width:"100%",
-            maxHeight:"100%",
-            marginTop:"70px",
-            marginBottom:"70px",
-            overflow:"hidden",
-            flexShrink:1,
-          }}
-        >
-          <div
-            style={{
-              display:"flex",
-              flexDirection:"row",
-              justifyContent:"space-between"
-            }}
-          >
-            <Typography.Title>{editingToy.name}</Typography.Title>
-            <Button style={{display:"flex", justifySelf:"flex-end"}} onClick={() => handleEdit(null)}>Close</Button>
-          </div>
-          <Divider></Divider>
-          <div
-          style={{
-            display:"flex",
-            justifyContent:"center",
-            alignContent:"center"
-          }}
-          >
-          <Carousel style={{display:"flex", width:"300px", }} arrows infinite={false}>
-            {editingToy.imageUrls.map(img => 
-              <img src={img}></img>
-            )}
-          </Carousel>
-          </div>
-        </Card>
-        : null
-        }
+
+        {/* Edit/Add Card - Pass the form instance */}
+        <ToyEditAddCard
+          form={form} // Pass the shared form instance
+          editingToy={editingToy}
+          toyTypes={toyTypes}
+          rarityTypes={rarityTypes}
+          handleEditButton={handleEditButton}
+          isEditing={isEditing}
+          setEditingToy={setEditingToy}
+          setIsEditing={setIsEditing}
+          setIsFetchList={setIsFetchList}
+        />
       </div>
     </div>
   );
