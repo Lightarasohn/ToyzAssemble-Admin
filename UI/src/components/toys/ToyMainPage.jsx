@@ -1,9 +1,9 @@
 import { use, useEffect, useState } from "react";
 import ToyList from "./ToyList";
 import ReusableCheckedCard from "../../reusableComponents/ReusableCheckedCard";
+import ReusableEditAddCard from "../../reusableComponents/ReusableEditAddCard";
 import GetAllToyTypesAPI from "../../api/toyType/GetAllToyTypesAPI";
 import GetAllRarityTypesAPI from "../../api/rarityType/GetAllRarityTypesAPI";
-import { useNotification } from "../../services/NotificationService";
 import UpdateSelectedToysAPI from "../../api/toyService/UpdateSelectedToysAPI";
 import {
   Button,
@@ -19,7 +19,7 @@ import {
 import UpdateToyAPI from "../../api/toy/UpdateToyAPI";
 import AddToyAPI from "../../api/toy/AddToyAPI";
 import DeleteToyAPI from "../../api/toy/DeleteToyAPI";
-import ToyEditAddCard from "./ToyEditAddCard";
+import { useNotification } from "../../services/NotificationService";
 
 const ToyMainPage = () => {
   const [toys, setToys] = useState([]);
@@ -30,20 +30,20 @@ const ToyMainPage = () => {
   const [editingToy, setEditingToy] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const notification = useNotification();
-  const [form] = Form.useForm(); // This form will be shared with ToyEditAddCard
+  const [form] = Form.useForm();
 
   const handleEditButton = (record) => {
     if (record === null) {
-      // Kapatma işlemi
+      // Close operation
       setEditingToy(null);
       setIsEditing(false);
       form.resetFields();
     } else {
-      // Edit moduna geçiş
+      // Switch to edit mode
       setEditingToy(record);
       setIsEditing(true);
 
-      // Form değerlerini set et
+      // Set form values
       form.setFieldsValue({
         name: record.name,
         price: record.price,
@@ -54,7 +54,8 @@ const ToyMainPage = () => {
     }
   };
 
-  const formFields = [
+  // Form fields configuration for both ReusableCheckedCard and ReusableEditAddCard
+  const bulkUpdateFormFields = [
     {
       name: "price",
       label: "Price",
@@ -92,6 +93,60 @@ const ToyMainPage = () => {
       placeholder: "Classic, Special, Accessory...",
       flex: 1,
       selectKey: "toyTypes",
+    },
+  ];
+
+  // Form fields for the Edit/Add card
+  const editAddFormFields = [
+    {
+      name: "name",
+      label: "Name",
+      type: "input",
+      placeholder: "Enter toy name",
+      required: true,
+      flex: 3,
+    },
+    {
+      name: "price",
+      label: "Price",
+      type: "number",
+      placeholder: "0.00",
+      min: 0,
+      max: 1000,
+      addOnBefore: "$",
+      addOnAfter: "float",
+      required: true,
+      flex: 1,
+    },
+    {
+      name: "luckPercentage",
+      label: "Luck Percentage",
+      type: "number",
+      placeholder: "0.00",
+      min: 0,
+      max: 100,
+      addOnBefore: "%",
+      addOnAfter: "float",
+      required: true,
+      flex: 1,
+    },
+    {
+      name: "toyTypeId",
+      label: "Toy Type",
+      type: "select",
+      placeholder: "Select toy type",
+      selectKey: "toyTypes",
+      required: true,
+      flex: 1,
+    },
+    {
+      name: "rarityId",
+      label: "Rarity",
+      type: "select",
+      placeholder: "Select rarity",
+      selectKey: "rarityTypes",
+      required: true,
+      flex: 1,
     },
   ];
 
@@ -187,7 +242,7 @@ const ToyMainPage = () => {
     try {
       await DeleteToyAPI(record.id);
       setIsFetchList(true);
-      // Edit edilen oyuncak silinirse edit modundan çık
+      // If the editing toy is deleted, exit edit mode
       if (editingToy && editingToy.id === record.id) {
         handleEditButton(null);
       }
@@ -230,7 +285,7 @@ const ToyMainPage = () => {
             updateButtonText="Update Selected Toys"
             clearButtonText="Clear All"
             updateFormTitle="Update Form"
-            formFields={formFields}
+            formFields={bulkUpdateFormFields}
             selectOptions={{
               rarityTypes: rarityTypes,
               toyTypes: toyTypes,
@@ -265,17 +320,32 @@ const ToyMainPage = () => {
           handleDeleteButton={handleDeleteButton}
         />
 
-        {/* Edit/Add Card - Pass the form instance */}
-        <ToyEditAddCard
-          form={form} // Pass the shared form instance
-          editingToy={editingToy}
-          toyTypes={toyTypes}
-          rarityTypes={rarityTypes}
-          handleEditButton={handleEditButton}
+        {/* Using the new ReusableEditAddCard */}
+        <ReusableEditAddCard
+          form={form}
+          editingItem={editingToy}
           isEditing={isEditing}
-          setEditingToy={setEditingToy}
-          setIsEditing={setIsEditing}
+          onAdd={AddToyAPI}
+          onUpdate={UpdateToyAPI}
+          onClose={() => handleEditButton(null)}
           setIsFetchList={setIsFetchList}
+          entityName="Toy"
+          formFields={editAddFormFields}
+          selectOptions={{
+            toyTypes: toyTypes,
+            rarityTypes: rarityTypes,
+          }}
+          showImages={true}
+          imageUrlsKey="imageUrls"
+          noImagesText="No Images Available"
+          showIdCard={true}
+          fieldsPerRow={3}
+          messages={{
+            addSuccess: "Toy added successfully!",
+            addError: "Toy could not be added!",
+            updateSuccess: "Toy updated successfully!",
+            updateError: "Toy could not be updated!",
+          }}
         />
       </div>
     </div>

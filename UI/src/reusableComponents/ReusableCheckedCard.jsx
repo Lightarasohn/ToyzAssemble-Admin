@@ -1,4 +1,4 @@
-import { Card, Tag, Button, Form, InputNumber, Select } from "antd";
+import { Card, Tag, Button, Form, InputNumber, Select, Divider } from "antd";
 import { useEffect, useState } from "react";
 import Title from "antd/es/typography/Title";
 
@@ -161,6 +161,8 @@ const ReusableCheckedCard = ({
             {clearButtonText}
           </Button>
         </div>
+
+        <Divider />
         
         {/* Seçili öğeleri listele */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
