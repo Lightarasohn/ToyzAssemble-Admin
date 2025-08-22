@@ -5,9 +5,10 @@ import ToyMainPage from "./components/toys/ToyMainPage";
 import { NotificationProvider } from "./services/NotificationService";
 import ThemeService from "./services/ThemeService";
 import { useState } from "react";
+import PackageMainPage from "./components/packages/PackageMainPage";
 
 function App() {
-  const [selectedTheme, setSelectedTheme] = useState(true)
+  const [selectedTheme, setSelectedTheme] = useState(false)
   return (
     <ThemeService selectedTheme={selectedTheme}>
       <NotificationProvider>
@@ -18,6 +19,7 @@ function App() {
               setSelectedTheme={setSelectedTheme}
             />}>
               <Route path="toys" element={<ToyMainPage />} />
+              <Route path="packages" element={<PackageMainPage />}/>
             </Route>
           </Routes>
         </BrowserRouter>

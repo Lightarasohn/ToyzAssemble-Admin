@@ -5,6 +5,7 @@ import {
   MenuOutlined,
   MoonOutlined,
   SunOutlined,
+  SwitcherOutlined,
 } from "@ant-design/icons";
 import { Breadcrumb, Card, Layout, Menu, theme, Button } from "antd";
 import ToyzAssembleLogo from "../../assets/logo/ToyzAssembleLogo.png";
@@ -39,7 +40,7 @@ const MainLayout = ({ selectedTheme, setSelectedTheme }) => {
 
   const items = [
     { key: "1", icon: <TeamOutlined />, label: "Toys", url: "/toys" },
-    { key: "2", icon: <UserOutlined />, label: "Users", url: "/users" },
+    { key: "2", icon: <SwitcherOutlined />, label: "Packages", url: "/packages" },
   ];
 
   const location = useLocation();
