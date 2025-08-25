@@ -8,6 +8,7 @@ import DeletePackageAPI from "../../api/package/DeletePackageAPI";
 import UpdateSelectedPackagesAPI from "../../api/package/UpdateSelectedPackagesAPI";
 import AddPackageAPI from "../../api/package/AddPackageAPI";
 import UpdatePackageAPI from "../../api/package/UpdatePackageAPI";
+import ReusableDeleteModal from "../../reusableComponents/ReusableDeleteModal";
 
 const PackageMainPage = () => {
   const [packages, setPackages] = useState([]);
@@ -15,6 +16,7 @@ const PackageMainPage = () => {
   const [isFetchList, setIsFetchList] = useState(true);
   const [editingItem, setEditingItem] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState([false, null]);
   const notification = useNotification();
   const [form] = Form.useForm();
 
@@ -127,7 +129,7 @@ const PackageMainPage = () => {
     setSelectedPackages([]);
   };
 
-  const handleDeleteButton = async (record) => {
+  const handleDelete = async (record) => {
     try {
       await DeletePackageAPI(record.id);
       setIsFetchList(true);
@@ -137,7 +139,7 @@ const PackageMainPage = () => {
       }
       notification.success({
         message: "Success",
-        description: "Toy deleted successfully!",
+        description: "Package deleted successfully!",
         duration: 5,
         showProgress: true,
         pauseOnHover: true,
@@ -146,13 +148,17 @@ const PackageMainPage = () => {
     } catch {
       notification.error({
         message: "Error",
-        description: "Toy could not be deleted!",
+        description: "Package could not be deleted!",
         duration: 5,
         showProgress: true,
         pauseOnHover: true,
         placement: "topRight",
       });
     }
+  }
+
+  const handleDeleteButton = (record) => {
+    setIsDeleteModalOpen([true, record]);
   };
 
   return (
@@ -203,6 +209,12 @@ const PackageMainPage = () => {
           setPackages={setPackages}
           handleEdit={handleEditButton}
           handleDeleteButton={handleDeleteButton}
+        />
+        <ReusableDeleteModal 
+          isOpen={isDeleteModalOpen}
+          setIsOpen={setIsDeleteModalOpen}
+          record={isDeleteModalOpen[1]}
+          handleOk={handleDelete}
         />
 
         {/* Using the new ReusableEditAddCard */}

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ReusableTable from "../../reusableComponents/ReusableTable";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import GetAllPackagesAPI from "../../api/package/GetAllPackagesAPI";
+import ReusableDeleteModal from "../../reusableComponents/ReusableDeleteModal";
 
 const PackageList = ({
   handleSelection,
