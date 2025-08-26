@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
 import ReusableTable from "../../reusableComponents/ReusableTable";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import GetAllRarityTypesAPI from "../../api/rarityType/GetAllRarityTypesAPI";
+import GetAllToyTypesAPI from "../../api/toyType/GetAllToyTypesAPI";
 
 
-const RarityList = ({
+const ToyTypeList = ({
   isFetchList,
   setIsFetchList,
-  rarities, 
-  setRarities,
+  toyTypes, 
+  setToyTypes,
   handleEdit,
   handleDeleteButton
 }) => {
-  const [filteredRarities, setFilteredRarities] = useState([]);
+  const [filteredToyTypes, setFilteredToyTypes] = useState([]);
   const [listLoading, setListLoading] = useState(true);
 
   useEffect(() => {
-    const fetchRarities = async () => {
+    const fetchToyTypes = async () => {
       try {
-        const data = await GetAllRarityTypesAPI();
-        setRarities(data);
+        const data = await GetAllToyTypesAPI();
+        setToyTypes(data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -27,7 +27,7 @@ const RarityList = ({
       }
     };
     if (isFetchList) {
-      fetchRarities();
+      fetchToyTypes();
       setIsFetchList(false);
     }
   }, [isFetchList]);
@@ -43,8 +43,8 @@ const RarityList = ({
       }}
     >
       <ReusableTable
-        tableTitle={"Packages"}
-        data={rarities}
+        tableTitle={"ToyTypes"}
+        data={toyTypes}
         columns={rarityColumns}
         loading={listLoading}
         pagination={{}}
@@ -56,11 +56,11 @@ const RarityList = ({
         deleteInsider={<DeleteOutlined />}
         size="large"
         enableFilter={true}
-        filteredData={filteredRarities}
-        setFilteredData={setFilteredRarities}
+        filteredData={filteredToyTypes}
+        setFilteredData={setFilteredToyTypes}
       />
     </div>
   );
 };
 
-export default RarityList;
+export default ToyTypeList;

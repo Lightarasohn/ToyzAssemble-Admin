@@ -6,7 +6,8 @@ import { NotificationProvider } from "./services/NotificationService";
 import ThemeService from "./services/ThemeService";
 import { useState } from "react";
 import PackageMainPage from "./components/packages/PackageMainPage";
-import RarityMainPage from "./components/rarity/RarityMainPage";
+import RarityMainPage from "./components/rarities/RarityMainPage";
+import ToyTypeMainPage from "./components/toyTypes/ToyTypeMainPage";
 
 function App() {
   const [selectedTheme, setSelectedTheme] = useState(false)
@@ -22,6 +23,7 @@ function App() {
               <Route path="toys" element={<ToyMainPage />} />
               <Route path="packages" element={<PackageMainPage />}/>
               <Route path="rarity-types" element={<RarityMainPage />}/>
+              <Route path="toy-types" element={<ToyTypeMainPage />}/>
             </Route>
           </Routes>
         </BrowserRouter>
