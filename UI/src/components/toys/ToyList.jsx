@@ -22,7 +22,15 @@ const ToyList = ({
     const fetchToys = async () => {
       try {
         const data = await GetAllToysAPI();
-        setToys(data);
+        setToys(data.map(x => {
+          if(x.rarity.deleted == true){
+            x.rarity.name = null
+          }
+          if(x.toyType.deleted == true){
+            x.toyType.name = null
+          }
+          return x;
+        }));
       } catch (err) {
         console.error(err);
       } finally {
