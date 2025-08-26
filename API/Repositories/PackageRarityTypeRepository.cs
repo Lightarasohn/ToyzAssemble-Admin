@@ -23,16 +23,16 @@ namespace API.Repositories
         public async Task<PackageRarityType> AddPackageRarityTypeAsync(PackageRarityTypeDto packageRarityType, int packageId, int rarityTypeId)
         {
 
-            var rarityType = await _context.RarityTypes.FirstOrDefaultAsync(r => r.Id == rarityTypeId)
+            var rarityType = await _context.RarityTypes.FirstOrDefaultAsync(r => r.Id == rarityTypeId && !r.Deleted) 
                 ?? throw new Exception($"Rarity type with ID {rarityTypeId} not found.");
 
-            var package = await _context.Packages.FirstOrDefaultAsync(p => p.Id == packageId)
+            var package = await _context.Packages.FirstOrDefaultAsync(p => p.Id == packageId && !p.Deleted)
                 ?? throw new Exception($"Package with ID {packageId} not found.");
 
             // Check if the combination already exists
             var existingPackageRarityType = await _context.PackageRarityTypes
                 .FirstOrDefaultAsync(pr => pr.PackageId == packageId &&
-                                          pr.RarityTypeId == rarityTypeId);
+                                          pr.RarityTypeId == rarityTypeId && !pr.Deleted);
 
             if (existingPackageRarityType != null)
             {
@@ -51,7 +51,7 @@ namespace API.Repositories
         {
 
             var packageRarityType = await _context.PackageRarityTypes
-                .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId)
+                .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId && !pr.Deleted)
                 ?? throw new Exception($"Package rarity type with PackageId {packageId} and RarityTypeId {rarityTypeId} not found.");
 
             packageRarityType.Deleted = true;

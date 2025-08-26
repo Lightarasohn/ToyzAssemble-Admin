@@ -24,10 +24,10 @@ namespace API.Repositories
         {
 
             var newToy = toy.ToModel();
-            var toyType = await _context.ToyTypes.FirstOrDefaultAsync(x => x.Id == toy.ToyTypeId)
+            var toyType = await _context.ToyTypes.FirstOrDefaultAsync(x => x.Id == toy.ToyTypeId && !x.Deleted)
              ?? throw new Exception("Toy type not found in the database.");
 
-            var addedToy = await _context.AddAsync(newToy);
+            var addedToy = await _context.Toys.AddAsync(newToy);
             await _context.SaveChangesAsync();
             return addedToy.Entity;
 
@@ -83,12 +83,12 @@ namespace API.Repositories
             foundToy.Name = toy.Name;
             foundToy.Price = toy.Price;
 
-            var toyType = await _context.ToyTypes.FirstOrDefaultAsync(x => x.Id == toy.ToyTypeId)
+            var toyType = await _context.ToyTypes.FirstOrDefaultAsync(x => x.Id == toy.ToyTypeId && !x.Deleted)
              ?? throw new Exception("Toy type not found in the database.");
             foundToy.ToyTypeId = toy.ToyTypeId;
             foundToy.ToyType = toyType;
 
-            var rarity = await _context.RarityTypes.FirstOrDefaultAsync(x => x.Id == toy.RarityId)
+            var rarity = await _context.RarityTypes.FirstOrDefaultAsync(x => x.Id == toy.RarityId && !x.Deleted)
              ?? throw new Exception("Rarity not found in the database.");
             foundToy.RarityId = toy.RarityId;
             foundToy.Rarity = rarity;
