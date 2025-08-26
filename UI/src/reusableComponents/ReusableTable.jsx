@@ -1,4 +1,4 @@
-import { FilterFilled, PlusOutlined, SaveOutlined } from "@ant-design/icons";
+import { FilterFilled, PlusOutlined, ReloadOutlined, SaveOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -242,6 +242,8 @@ const ReusableTable = ({
   enableFilter = true, // @boolean
   filteredData = [], // @array
   setFilteredData = console.log("Set setFilteredDataFunction please!"), // @function()
+  reloadButtonEnabled = true, // @boolean
+  reloadButtonFunction = console.log("Set reloadButtonFunction please!"), // @function()
 }) => {
   const [filters, setFilters] = useState([]);
   const [appliedFilters, setAppliedFilters] = useState([]);
@@ -380,8 +382,19 @@ const ReusableTable = ({
           <div
             style={{
               display:"flex",
+              gap:"16px"
             }}
           >
+            {reloadButtonEnabled ?
+              <Button
+                style={{
+                    justifySelf:"center",
+                    alignSelf:"flex-end"
+                  }}
+                  icon={<ReloadOutlined />}
+                onClick={reloadButtonFunction}
+                ></Button>
+            : null}
             <Popover
               content={
                 <>

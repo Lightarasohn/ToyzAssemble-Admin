@@ -18,8 +18,7 @@ const ToyList = ({
   const [filteredToys, setFilteredToys] = useState([]);
   const [listLoading, setListLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchToys = async () => {
+  const fetchToys = async () => {
       try {
         const data = await GetAllToysAPI();
         setToys(data.map(x => {
@@ -37,6 +36,8 @@ const ToyList = ({
         setListLoading(false);
       }
     };
+
+  useEffect(() => {
     if (isFetchList) {
       fetchToys();
       setIsFetchList(false);
@@ -96,6 +97,8 @@ const ToyList = ({
         enableFilter={true}
         filteredData={filteredToys}
         setFilteredData={setFilteredToys}
+        reloadButtonEnabled={true}
+        reloadButtonFunction={fetchToys}
       />
     </div>
   );

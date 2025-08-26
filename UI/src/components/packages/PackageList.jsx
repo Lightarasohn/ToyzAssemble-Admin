@@ -18,8 +18,7 @@ const PackageList = ({
   const [filteredPackages, setFilteredPackages] = useState([]);
   const [listLoading, setListLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchPackages = async () => {
+  const fetchPackages = async () => {
       try {
         const data = await GetAllPackagesAPI();
         setPackages(data);
@@ -29,6 +28,8 @@ const PackageList = ({
         setListLoading(false);
       }
     };
+
+  useEffect(() => {
     if (isFetchList) {
       fetchPackages();
       setIsFetchList(false);
@@ -80,6 +81,8 @@ const PackageList = ({
         enableFilter={true}
         filteredData={filteredPackages}
         setFilteredData={setFilteredPackages}
+        reloadButtonEnabled={true}
+        reloadButtonFunction={fetchPackages}
       />
     </div>
   );

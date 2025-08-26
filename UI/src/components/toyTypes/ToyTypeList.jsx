@@ -15,7 +15,6 @@ const ToyTypeList = ({
   const [filteredToyTypes, setFilteredToyTypes] = useState([]);
   const [listLoading, setListLoading] = useState(true);
 
-  useEffect(() => {
     const fetchToyTypes = async () => {
       try {
         const data = await GetAllToyTypesAPI();
@@ -26,6 +25,8 @@ const ToyTypeList = ({
         setListLoading(false);
       }
     };
+
+  useEffect(() => {
     if (isFetchList) {
       fetchToyTypes();
       setIsFetchList(false);
@@ -43,7 +44,7 @@ const ToyTypeList = ({
       }}
     >
       <ReusableTable
-        tableTitle={"ToyTypes"}
+        tableTitle={"Toy Types"}
         data={toyTypes}
         columns={rarityColumns}
         loading={listLoading}
@@ -58,6 +59,8 @@ const ToyTypeList = ({
         enableFilter={true}
         filteredData={filteredToyTypes}
         setFilteredData={setFilteredToyTypes}
+        reloadButtonEnabled={true}
+        reloadButtonFunction={fetchToyTypes}
       />
     </div>
   );

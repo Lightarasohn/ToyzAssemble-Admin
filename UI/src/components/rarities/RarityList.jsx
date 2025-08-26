@@ -15,8 +15,7 @@ const RarityList = ({
   const [filteredRarities, setFilteredRarities] = useState([]);
   const [listLoading, setListLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchRarities = async () => {
+  const fetchRarities = async () => {
       try {
         const data = await GetAllRarityTypesAPI();
         setRarities(data);
@@ -26,6 +25,8 @@ const RarityList = ({
         setListLoading(false);
       }
     };
+
+  useEffect(() => {
     if (isFetchList) {
       fetchRarities();
       setIsFetchList(false);
@@ -58,6 +59,8 @@ const RarityList = ({
         enableFilter={true}
         filteredData={filteredRarities}
         setFilteredData={setFilteredRarities}
+        reloadButtonEnabled={true}
+        reloadButtonFunction={fetchRarities}
       />
     </div>
   );
