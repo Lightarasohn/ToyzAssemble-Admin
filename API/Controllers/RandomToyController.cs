@@ -19,7 +19,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{packageId}")]
-        public async Task<IActionResult> GetRandomToy(int packageId)
+        public async Task<IActionResult> GetRandomToy([FromRoute] int packageId)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try

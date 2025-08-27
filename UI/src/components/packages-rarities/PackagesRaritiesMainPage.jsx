@@ -192,7 +192,11 @@ const PackagesRaritiesMainPage = () => {
 
   const handleDelete = async (record) => {
     try {
-      await DeletePackageRarityAPI(record.id);
+        const apiVal = {
+            packageId: record.packageId,
+            rarityTypeId: record.rarityTypeId
+        }
+      await DeletePackageRarityAPI(apiVal);
       setIsFetchList(true);
       // If the editing toy is deleted, exit edit mode
       if (editingToy && editingToy.id === record.id) {

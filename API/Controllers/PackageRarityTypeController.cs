@@ -111,13 +111,13 @@ namespace API.Controllers
             }
         }
 
-        [HttpDelete("{packageId}/{rarityTypeId}")]
-        public async Task<IActionResult> Delete(int packageId, int rarityTypeId)
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromBody] PackageRarityTypeDeleteDto deleteDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var deletedPackageRarityType = await _repository.DeletePackageRarityTypeAsync(packageId, rarityTypeId);
+                var deletedPackageRarityType = await _repository.DeletePackageRarityTypeAsync(deleteDto);
                 return Ok(deletedPackageRarityType);
             }
             catch (Exception ex)

@@ -12,12 +12,15 @@ namespace API.Services
     public class GiveawayRepository : IGiveawayRepository
     {
         private readonly IPackageRepository _packageRepository;
+        private readonly IToyTypeRepository _toyTypeRepository;
         private readonly ILogger<GiveawayRepository> _logger;
         private readonly Random _random;
 
-        public GiveawayRepository(IPackageRepository packageRepository, ILogger<GiveawayRepository> logger)
+        public GiveawayRepository(IPackageRepository packageRepository,
+            ILogger<GiveawayRepository> logger, IToyTypeRepository toyTypeRepository)
         {
             _packageRepository = packageRepository;
+            _toyTypeRepository = toyTypeRepository;
             _logger = logger;
             _random = new Random();
         }
@@ -51,7 +54,7 @@ namespace API.Services
 
         public PackageRarityType PickRarityTypeFromPackage(Package package)
         {
-            var packageRarityTypes = package.PackageRarityTypes?.Where(pr => pr.Ratio > 0).ToList()
+            var packageRarityTypes = package.PackageRarityTypes?.Where(pr => pr.Ratio > 0 && pr.RarityType.Toys.Any(t => !t.Deleted && t.LuckPercentage > 0)).ToList()
                 ?? throw new Exception("Package has no rarity types");
 
             if (!packageRarityTypes.Any())
@@ -93,7 +96,7 @@ namespace API.Services
 
             _logger.LogInformation($"Picking toy from package: {package.Name} (ID: {package.Id})");
 
-            const int maxAttempts = 10;
+            const int maxAttempts = 30;
             int attempts = 0;
             PackageRarityType pickedRarityType;
 
@@ -120,7 +123,9 @@ namespace API.Services
             _logger.LogInformation($"Selected rarity type: {pickedRarityType.RarityType.Name} with ratio {pickedRarityType.Ratio}");
 
             var pickedToy = PickToyFromRarityType(pickedRarityType.RarityType);
-            var pickedToyDto = pickedToy.ToRandomDto();
+            Console.WriteLine($"{pickedToy.Rarity}, {pickedToy.ToyType}");
+            var toyType = await _toyTypeRepository.GetToyTypeByIdAsync(pickedToy.ToyTypeId);
+            var pickedToyDto = pickedToy.ToRandomDto(toyType);
 
             // Probability calculation
             var totalRarityRatio = package.PackageRarityTypes!.Sum(pr => (float)pr.Ratio);

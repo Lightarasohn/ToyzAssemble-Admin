@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Models;
 
 namespace API.DTOs.ToyDTOs
 {
@@ -20,5 +21,11 @@ namespace API.DTOs.ToyDTOs
         public int RarityId { get; set; }
 
         public bool Deleted { get; set; }
+
+        public List<string>? ImageUrls { get; set; }
+
+        public virtual RarityType Rarity { get; set; } = null!;
+
+        public virtual ToyType ToyType { get; set; } = null!;
     }
 }

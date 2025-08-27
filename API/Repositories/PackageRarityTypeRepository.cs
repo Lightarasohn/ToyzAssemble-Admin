@@ -48,8 +48,10 @@ namespace API.Repositories
             return newPackageRarityType;
         }
 
-        public async Task<PackageRarityType> DeletePackageRarityTypeAsync(int packageId, int rarityTypeId)
+        public async Task<PackageRarityType> DeletePackageRarityTypeAsync(PackageRarityTypeDeleteDto deleteDto)
         {
+            var packageId = deleteDto.PackageId;
+            var rarityTypeId = deleteDto.RarityTypeId;
 
             var packageRarityType = await _context.PackageRarityTypes
                 .FirstOrDefaultAsync(pr => pr.PackageId == packageId && pr.RarityTypeId == rarityTypeId && !pr.Deleted)
