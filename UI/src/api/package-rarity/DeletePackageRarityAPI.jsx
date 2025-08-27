@@ -1,10 +1,11 @@
-const DeletePackageRarityAPI = async (packageId, rarityId) => {
-    const URL = `${import.meta.env.VITE_BASE_API_URL}/package-rarity-type/${packageId}/${rarityId}`;
+const DeletePackageRarityAPI = async (body) => {
+    const URL = `${import.meta.env.VITE_BASE_API_URL}/package-rarity-type`;
     const payload = {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
         },
+        body: JSON.stringify(body)
     }
 
     try {
