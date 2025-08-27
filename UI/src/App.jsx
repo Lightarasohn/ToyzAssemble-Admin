@@ -8,6 +8,7 @@ import { useState } from "react";
 import PackageMainPage from "./components/packages/PackageMainPage";
 import RarityMainPage from "./components/rarities/RarityMainPage";
 import ToyTypeMainPage from "./components/toyTypes/ToyTypeMainPage";
+import PackagesRaritiesMainPage from "./components/packages-rarities/PackagesRaritiesMainPage";
 
 function App() {
   const [selectedTheme, setSelectedTheme] = useState(false)
@@ -24,6 +25,7 @@ function App() {
               <Route path="packages" element={<PackageMainPage />}/>
               <Route path="rarity-types" element={<RarityMainPage />}/>
               <Route path="toy-types" element={<ToyTypeMainPage />}/>
+              <Route path="packages-rarities" element={<PackagesRaritiesMainPage />}/>
             </Route>
           </Routes>
         </BrowserRouter>

@@ -8,6 +8,7 @@ import {
   SwitcherOutlined,
   AppstoreOutlined,
   AppstoreFilled,
+  AppstoreAddOutlined,
 } from "@ant-design/icons";
 import { Breadcrumb, Card, Layout, Menu, theme, Button } from "antd";
 import ToyzAssembleLogo from "../../assets/logo/ToyzAssembleLogo.png";
@@ -44,7 +45,8 @@ const MainLayout = ({ selectedTheme, setSelectedTheme }) => {
     { key: "1", icon: <TeamOutlined />, label: "Toys", url: "/toys" },
     { key: "2", icon: <SwitcherOutlined />, label: "Packages", url: "/packages" },
     { key: "3", icon: <AppstoreOutlined />, label: "Rarity Types", url: "/rarity-types"},
-    { key: "4", icon: <AppstoreFilled />, label: "Toy Types", url: "/toy-types"}
+    { key: "4", icon: <AppstoreFilled />, label: "Toy Types", url: "/toy-types"},
+    { key: "5", icon: <AppstoreAddOutlined />, label: "PackagesRarities", url: "/packages-rarities"}
   ];
 
   const location = useLocation();
@@ -69,11 +71,16 @@ const MainLayout = ({ selectedTheme, setSelectedTheme }) => {
   ];
 
   useEffect(() => {
-    const currentItem = items.find((item) =>
+  // Önce tam eşleşme kontrolü yap
+  let currentItem = items.find((item) => location.pathname === item.url);
+  // Tam eşleşme bulunamazsa, startsWith kontrolü yap
+  if (!currentItem) {
+    currentItem = items.find((item) =>
       location.pathname.startsWith(item.url)
     );
-    setSelectedMenuKey(currentItem ? [currentItem.key] : []);
-  }, [location.pathname]);
+  }
+  setSelectedMenuKey(currentItem ? [currentItem.key] : []);
+}, [location.pathname]);
 
   return (
     <Layout

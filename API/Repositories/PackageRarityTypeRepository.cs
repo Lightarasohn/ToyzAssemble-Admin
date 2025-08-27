@@ -20,9 +20,10 @@ namespace API.Repositories
             _context = context;
         }
 
-        public async Task<PackageRarityType> AddPackageRarityTypeAsync(PackageRarityTypeDto packageRarityType, int packageId, int rarityTypeId)
+        public async Task<PackageRarityType> AddPackageRarityTypeAsync(PackageRarityTypeDto packageRarityType)
         {
-
+            var rarityTypeId = packageRarityType.RarityTypeId;
+            var packageId = packageRarityType.PackageId;
             var rarityType = await _context.RarityTypes.FirstOrDefaultAsync(r => r.Id == rarityTypeId && !r.Deleted) 
                 ?? throw new Exception($"Rarity type with ID {rarityTypeId} not found.");
 
@@ -116,8 +117,10 @@ namespace API.Repositories
 
         }
 
-        public async Task<PackageRarityType> UpdatePackageRarityTypeAsync(PackageRarityTypeDto packageRarityType, int packageId, int rarityTypeId)
+        public async Task<PackageRarityType> UpdatePackageRarityTypeAsync(PackageRarityTypeDto packageRarityType)
         {
+            var rarityTypeId = packageRarityType.RarityTypeId;
+            var packageId = packageRarityType.PackageId;
 
             var packageRarityTypeToUpdate = await _context.PackageRarityTypes
                 .Include(pr => pr.Package)

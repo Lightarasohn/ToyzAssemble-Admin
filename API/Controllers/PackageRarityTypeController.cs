@@ -79,13 +79,13 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("{packageId}/{rarityTypeId}")]
-        public async Task<IActionResult> Create(int packageId, int rarityTypeId, [FromBody] PackageRarityTypeDto packageRarityTypeDto)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] PackageRarityTypeDto packageRarityTypeDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var packageRarityType = await _repository.AddPackageRarityTypeAsync(packageRarityTypeDto, packageId, rarityTypeId);
+                var packageRarityType = await _repository.AddPackageRarityTypeAsync(packageRarityTypeDto);
                 return CreatedAtAction(nameof(GetById),
                     new { packageId = packageRarityType.PackageId, rarityTypeId = packageRarityType.RarityTypeId },
                     packageRarityType);
@@ -96,13 +96,13 @@ namespace API.Controllers
             }
         }
 
-        [HttpPut("{packageId}/{rarityTypeId}")]
-        public async Task<IActionResult> Update(int packageId, int rarityTypeId, [FromBody] PackageRarityTypeDto packageRarityTypeDto)
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] PackageRarityTypeDto packageRarityTypeDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var updatedPackageRarityType = await _repository.UpdatePackageRarityTypeAsync(packageRarityTypeDto, packageId, rarityTypeId);
+                var updatedPackageRarityType = await _repository.UpdatePackageRarityTypeAsync(packageRarityTypeDto);
                 return Ok(updatedPackageRarityType);
             }
             catch (Exception ex)
