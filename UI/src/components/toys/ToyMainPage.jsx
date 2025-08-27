@@ -20,6 +20,7 @@ import UpdateToyAPI from "../../api/toy/UpdateToyAPI";
 import AddToyAPI from "../../api/toy/AddToyAPI";
 import DeleteToyAPI from "../../api/toy/DeleteToyAPI";
 import { useNotification } from "../../services/NotificationService";
+import ReusableDeleteModal from "../../reusableComponents/ReusableDeleteModal";
 
 const ToyMainPage = () => {
   const [toys, setToys] = useState([]);
@@ -29,6 +30,7 @@ const ToyMainPage = () => {
   const [toyTypes, setToyTypes] = useState([]);
   const [editingToy, setEditingToy] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState([false, null]);
   const notification = useNotification();
   const [form] = Form.useForm();
 
@@ -238,7 +240,7 @@ const ToyMainPage = () => {
     setSelectedToys([]);
   };
 
-  const handleDeleteButton = async (record) => {
+  const handleDelete = async (record) => {
     try {
       await DeleteToyAPI(record.id);
       setIsFetchList(true);
@@ -264,6 +266,10 @@ const ToyMainPage = () => {
         placement: "topRight",
       });
     }
+  }
+
+  const handleDeleteButton = async (record) => {
+    setIsDeleteModalOpen([true, record]);
   };
 
   return (
@@ -319,6 +325,12 @@ const ToyMainPage = () => {
           handleEdit={handleEditButton}
           handleDeleteButton={handleDeleteButton}
         />
+        <ReusableDeleteModal
+            isOpen={isDeleteModalOpen}
+            setIsOpen={setIsDeleteModalOpen}
+            record={isDeleteModalOpen[1]}
+            handleOk={handleDelete}
+          />
 
         {/* Using the new ReusableEditAddCard */}
         <ReusableEditAddCard
