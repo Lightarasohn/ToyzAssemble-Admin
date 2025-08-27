@@ -50,6 +50,7 @@ builder.Services.AddScoped<IPackageRarityTypeRepository, PackageRarityTypeReposi
 builder.Services.AddScoped<IGiveawayRepository, GiveawayRepository>();
 builder.Services.AddScoped<IRarityTypeRepository, RarityTypeRepository>();
 builder.Services.AddScoped<IToyService, ToyService>();
+builder.Services.AddScoped<IDeletedService, DeletedService>();
 
 builder.Services.AddCors(options =>
 {
