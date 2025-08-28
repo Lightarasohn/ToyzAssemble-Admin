@@ -225,7 +225,6 @@ const MainLayout = ({ selectedTheme, setSelectedTheme }) => {
               icon={<MenuOutlined />}
               onClick={() => setCollapsed(false)}
               style={{
-                marginRight: "12px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -241,8 +240,6 @@ const MainLayout = ({ selectedTheme, setSelectedTheme }) => {
             size="small"
             className="main-header-card"
             style={{
-              width: "40px",
-              height: "40px",
               borderRadius: borderRadiusLG,
               display: "flex",
               justifyContent: "flex-start",
@@ -260,7 +257,7 @@ const MainLayout = ({ selectedTheme, setSelectedTheme }) => {
             <Breadcrumb
               className="main-header-breadcrumb"
               style={{
-                minWidth: "200px",
+                minWidth: "120px",
                 margin: 0,
                 fontSize: "14px",
               }}

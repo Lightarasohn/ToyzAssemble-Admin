@@ -61,6 +61,9 @@ const RandomToyMainPage = () => {
           xl: 6,
           xxl: 3,
         }}
+        style={{
+          minWidth: "400px",
+        }}
         dataSource={packages}
         renderItem={(item) => {
           // oranların toplamı
@@ -77,6 +80,7 @@ const RandomToyMainPage = () => {
                       flexDirection: "row",
                       justifyContent: "space-between",
                       alignContent: "center",
+                      minWidth: "300px",
                     }}
                   >
                     <span>{item.package.name} | ${item.package.price}</span>
