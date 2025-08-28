@@ -26,10 +26,26 @@ builder.Services.AddControllers()
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 // Database connection string
-builder.Services.AddDbContext<PostgresContext>(options =>
+var connectionType = builder.Configuration.GetValue<string>("ConnectionType")!;
+
+if (connectionType.Equals("ipv4", StringComparison.CurrentCultureIgnoreCase))
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection"));
-});
+    Console.WriteLine("Using IPV4 Connection");
+    var connectionString = builder.Configuration.GetConnectionString("PostgreSQLConnectionIPV4");
+    builder.Services.AddDbContext<PostgresContext>(options =>
+    {
+        options.UseNpgsql(connectionString);
+    });
+}
+else
+{
+    Console.WriteLine("Using IPV6 Connection");
+    var connectionString = builder.Configuration.GetConnectionString("PostgreSQLConnectionIPV6");
+    builder.Services.AddDbContext<PostgresContext>(options =>
+    {
+        options.UseNpgsql(connectionString);
+    });
+}
 
 // Add Swagger generation
 builder.Services.AddSwaggerGen(c =>
@@ -56,7 +72,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhostClient", policy =>
     {
-        policy.WithOrigins("https://pw3v9thc-4286.euw.devtunnels.ms","http://localhost:5173", "https://localhost:5173", "http://localhost:4286", "https://localhost:4286") // Buraya izin vermek istediğin adresi yaz
+        policy.WithOrigins("https://pw3v9thc-4286.euw.devtunnels.ms", "http://localhost:5173", "https://localhost:5173", "http://localhost:4286", "https://localhost:4286") // Buraya izin vermek istediğin adresi yaz
               .AllowAnyHeader()
               .AllowAnyMethod();
     });

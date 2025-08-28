@@ -1,0 +1,24 @@
+{
+  "Kestrel": {
+    "Endpoints": {
+      "Https":{
+        "Url": ""
+      },
+      "Http": {
+        "Url": ""
+      }
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings":{
+    "PostgreSQLConnectionIPV6": "",
+    "PostgreSQLConnectionIPV4": ""
+  },
+  "ConnectionType": "ipv4"
+}

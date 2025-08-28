@@ -28,8 +28,8 @@ public partial class PostgresContext : DbContext
 
     public virtual DbSet<ToyType> ToyTypes { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Name=PostgreSQLConnection");
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //     => optionsBuilder.UseNpgsql("Name=PostgreSQLConnection");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
