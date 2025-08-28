@@ -10,6 +10,7 @@ import RarityMainPage from "./components/rarities/RarityMainPage";
 import ToyTypeMainPage from "./components/toyTypes/ToyTypeMainPage";
 import PackagesRaritiesMainPage from "./components/packages-rarities/PackagesRaritiesMainPage";
 import RandomToyMainPage from "./components/random-toy/RandomToyMainPage";
+import DeletedMainPage from "./components/deleted/DeletedMainPage";
 
 function App() {
   const [selectedTheme, setSelectedTheme] = useState(false)
@@ -28,6 +29,7 @@ function App() {
               <Route path="toy-types" element={<ToyTypeMainPage />}/>
               <Route path="packages-rarities" element={<PackagesRaritiesMainPage />}/>
               <Route path="random-toy" element={<RandomToyMainPage />}/>
+              <Route path="deleted" element={<DeletedMainPage />}/>
             </Route>
           </Routes>
         </BrowserRouter>

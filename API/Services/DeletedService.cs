@@ -14,10 +14,6 @@ namespace API.Services
 {
     public class DeletedService : IDeletedService
     {
-        private class NullClass
-        {
-
-        }
         private readonly PostgresContext _context;
         public DeletedService(PostgresContext context)
         {
@@ -55,9 +51,9 @@ namespace API.Services
 
         public async Task<bool> UnDeleteAsync(UnDeleteDTO unDeleteDTO)
         {
-            switch (unDeleteDTO.TableName)
+            switch (unDeleteDTO.TableName.ToLower())
             {
-                case "Toys":
+                case "toys":
                     {
                         var toy = await _context.Toys
                             .FirstOrDefaultAsync(t => t.Id == unDeleteDTO.Id)
@@ -66,7 +62,7 @@ namespace API.Services
                         toy.Deleted = false;
                         break;
                     }
-                case "Packages":
+                case "packages":
                     {
                         var package = await _context.Packages
                             .FirstOrDefaultAsync(p => p.Id == unDeleteDTO.Id)
@@ -75,7 +71,7 @@ namespace API.Services
                         package.Deleted = false;
                         break;
                     }
-                case "RarityTypes":
+                case "raritytypes":
                     {
                         var rarity = await _context.RarityTypes
                             .FirstOrDefaultAsync(r => r.Id == unDeleteDTO.Id)
@@ -84,13 +80,22 @@ namespace API.Services
                         rarity.Deleted = false;
                         break;
                     }
-                case "ToyTypes":
+                case "toytypes":
                     {
                         var toyType = await _context.ToyTypes
                             .FirstOrDefaultAsync(tt => tt.Id == unDeleteDTO.Id)
                             ?? throw new InvalidOperationException($"ToyType with Id {unDeleteDTO.Id} not found");
 
                         toyType.Deleted = false;
+                        break;
+                    }
+                case "packages-raritytypes":
+                    {
+                        var packagesRarityTypes = await _context.PackageRarityTypes
+                            .FirstOrDefaultAsync(prt =>
+                            prt.PackageId == unDeleteDTO.PackageRarityTypeDto.PackageId &&
+                            prt.RarityTypeId == unDeleteDTO.PackageRarityTypeDto.RarityTypeId)
+                            ?? throw new InvalidOperationException($"PackageRarityType with packageId {unDeleteDTO.PackageRarityTypeDto.PackageId} and rarityTypeId {unDeleteDTO.PackageRarityTypeDto.RarityTypeId} not found");
                         break;
                     }
                 default:

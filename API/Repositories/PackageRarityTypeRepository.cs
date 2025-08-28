@@ -64,6 +64,24 @@ namespace API.Repositories
 
         }
 
+        public async Task<bool> DeletePackageRarityTypesByPackageIdAsync(int packageId)
+        {
+            var package = await _context.Packages.FirstOrDefaultAsync(x => x.Id == packageId && !x.Deleted)
+                ?? throw new Exception($"Package with Id of ${packageId} was not found!");
+
+            var packageRarityTypes = await _context.PackageRarityTypes.ToListAsync();
+
+            foreach (var packageRarityType in packageRarityTypes)
+            {
+                packageRarityType.Deleted = true;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return true;
+
+        }
+
         public async Task<IEnumerable<PackageRarityType>> GetAllPackageRarityTypeByPackageIdAsync(int id)
         {
 

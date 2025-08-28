@@ -125,5 +125,20 @@ namespace API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpDelete("package/{packageId}")]
+        public async Task<IActionResult> DeleteAllByPackageId([FromRoute] int packageId)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                var deletedPackageRarityType = await _repository.DeletePackageRarityTypesByPackageIdAsync(packageId);
+                return Ok(deletedPackageRarityType);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

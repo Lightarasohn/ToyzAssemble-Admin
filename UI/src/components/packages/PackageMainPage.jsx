@@ -9,6 +9,7 @@ import UpdateSelectedPackagesAPI from "../../api/package/UpdateSelectedPackagesA
 import AddPackageAPI from "../../api/package/AddPackageAPI";
 import UpdatePackageAPI from "../../api/package/UpdatePackageAPI";
 import ReusableDeleteModal from "../../reusableComponents/ReusableDeleteModal";
+import DeleteAllPackageRaritiesByPackageIdAPI from "../../api/package-rarity/DeleteAllPackageRaritiesByPackageIdAPI";
 
 const PackageMainPage = () => {
   const [packages, setPackages] = useState([]);
@@ -132,6 +133,7 @@ const PackageMainPage = () => {
   const handleDelete = async (record) => {
     try {
       await DeletePackageAPI(record.id);
+      await DeleteAllPackageRaritiesByPackageIdAPI(record.id);
       setIsFetchList(true);
       // If the editing toy is deleted, exit edit mode
       if (editingItem && editingItem.id === record.id) {

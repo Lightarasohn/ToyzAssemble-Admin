@@ -9,5 +9,6 @@ namespace API.DTOs.DeletedDTOs
     {
         public string TableName { get; set; } = string.Empty!;
         public int Id { get; set; }
+        public UnDeletePackageRarityTypeDto PackageRarityTypeDto { get; set; } = new()!;
     }
 }

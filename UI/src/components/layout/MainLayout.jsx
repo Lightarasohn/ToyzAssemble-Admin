@@ -10,6 +10,8 @@ import {
   AppstoreFilled,
   AppstoreAddOutlined,
   UserSwitchOutlined,
+  DeleteTwoTone,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import { Breadcrumb, Card, Layout, Menu, theme, Button } from "antd";
 import ToyzAssembleLogo from "../../assets/logo/ToyzAssembleLogo.png";
@@ -48,7 +50,8 @@ const MainLayout = ({ selectedTheme, setSelectedTheme }) => {
     { key: "3", icon: <AppstoreOutlined />, label: "Rarity Types", url: "/rarity-types"},
     { key: "4", icon: <AppstoreFilled />, label: "Toy Types", url: "/toy-types"},
     { key: "5", icon: <AppstoreAddOutlined />, label: "Packages-Rarities", url: "/packages-rarities"},
-    { key: "6", icon: <UserSwitchOutlined />, label: "Random Toy", url: "/random-toy"}
+    { key: "6", icon: <UserSwitchOutlined />, label: "Random Toy", url: "/random-toy"},
+    { key: "10", icon: <DeleteOutlined />, label: "Deleted", url: "/deleted"},
   ];
 
   const location = useLocation();

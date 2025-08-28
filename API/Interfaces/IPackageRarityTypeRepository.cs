@@ -16,6 +16,7 @@ namespace API.Interfaces
         Task<PackageRarityType> AddPackageRarityTypeAsync(PackageRarityTypeDto PackageRarityType);
         Task<PackageRarityType> UpdatePackageRarityTypeAsync(PackageRarityTypeDto PackageRarityType);
         Task<PackageRarityType> DeletePackageRarityTypeAsync(PackageRarityTypeDeleteDto deleteDto);
+        Task<bool> DeletePackageRarityTypesByPackageIdAsync(int packageId);
 
     }
 }
