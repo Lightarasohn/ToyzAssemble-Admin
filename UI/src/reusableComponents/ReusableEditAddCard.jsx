@@ -50,8 +50,6 @@ const ReusableEditAddCard = ({
     maxHeight: "100%",
     marginTop: "70px",
     marginBottom: "70px",
-    overflow: "hidden",
-    flexShrink: 1,
   },
 
   // Custom validation rules
@@ -254,7 +252,16 @@ const ReusableEditAddCard = ({
     for (let i = 0; i < formFields.length; i += fieldsPerRow) {
       const fieldsInRow = formFields.slice(i, i + fieldsPerRow);
       rows.push(
-        <div key={i} style={{ display: "flex", gap: "16px" }}>
+        <div
+          key={i}
+          style={{
+            display: "flex",
+            gap: "16px",
+            width: "100%",
+            flexWrap: "wrap",
+          }}
+          className="responsive-form-row"
+        >
           {fieldsInRow.map(renderFormField)}
         </div>
       );
@@ -355,48 +362,129 @@ const ReusableEditAddCard = ({
   };
 
   return (
-    <Card style={cardStyle}>
+    <Card
+      style={{
+        ...cardStyle,
+        padding: "16px",
+        boxSizing: "border-box",
+        width: "100%",
+        maxWidth: "700px",
+        margin: "auto",
+      }}
+      bodyStyle={{
+        padding: "0",
+        width: "100%",
+      }}
+    >
       {renderHeader()}
 
       <Divider />
 
       {renderImages()}
 
-      {/* ID display (only in edit mode) */}
+      {/* Responsive ID Card */}
       {showIdCard && isEditing && editingItem && (
-        <Card size="small" style={{ marginBottom: "16px" }}>
+        <Card
+          size="small"
+          style={{
+            marginBottom: "16px",
+            fontSize: "1rem",
+            width: "100%",
+          }}
+        >
           ID: {editingItem.id}
         </Card>
       )}
 
-      {/* Form */}
       <Form
         form={form}
         style={{
           display: "flex",
           flexDirection: "column",
           gap: "16px",
+          width: "100%",
         }}
         onFinish={handleFormSubmit}
         layout={formLayout}
       >
-        {renderFormRows()}
-
+        {/* Responsive form rows */}
         <div
           style={{
             display: "flex",
-            justifyContent: "flex-end",
-            gap: "8px",
+            flexDirection: "column",
+            gap: "16px",
+            width: "100%",
           }}
         >
+          {renderFormRows()}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "flex-end",
+            gap: "8px",
+            flexWrap: "wrap",
+          }}
+          className="responsive-form-actions"
+        >
           {isEditing && (
-            <Button onClick={() => form.resetFields()}>Reset</Button>
+            <Button
+              onClick={() => form.resetFields()}
+              style={{ minWidth: "100px", width: "100%" }}
+              block
+            >
+              Reset
+            </Button>
           )}
-          <Button type="primary" htmlType="submit">
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{ minWidth: "140px", width: "100%" }}
+            block
+          >
             {isEditing ? `Update ${entityName}` : `Add ${entityName}`}
           </Button>
         </div>
       </Form>
+      {/* Mobile responsive styles */}
+      <style>
+        {`
+        @media (max-width: 900px) {
+          .ant-card {
+            margin-top: 16px !important;
+            margin-bottom: 16px !important;
+            max-width: 100vw !important;
+          }
+          .ant-form-item {
+            width: 100% !important;
+          }
+          .ant-btn {
+            width: 100% !important;
+            min-width: 100px !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .ant-card {
+            min-width: 280px !important;
+            padding: 16px !important;
+            font-size: 13px !important;
+          }
+          .responsive-form-row {
+            flex-direction: column !important;
+            gap: 8px !important;
+            width: 100% !important;
+          }
+        }
+        @media (max-width: 420px) {
+          .ant-card {
+            min-width: 220px !important;
+            padding: 8px !important;
+            font-size: 12px !important;
+          }
+        }
+      `}
+      </style>
     </Card>
   );
 };

@@ -266,6 +266,8 @@ const PackagesRaritiesMainPage = () => {
           justifyContent: "flex-start",
           alignContent: "center",
           gap: "16px",
+          flexWrap: "wrap",
+          width: "100%",
         }}
       >
         <PackagesRaritiesList

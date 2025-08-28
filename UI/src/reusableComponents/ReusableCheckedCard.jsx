@@ -130,86 +130,164 @@ const ReusableCheckedCard = ({
   }
   
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "flex-start",
-        alignContent: "center",
-        gap: "16px",
-      }}
-    >
-      {/* Seçili öğeleri gösteren kart */}
-      <Card
-        style={{ 
-          display: "flex", 
-          flexDirection: "column", 
-          flex: leftCardFlex, 
-          gap: "8px" 
-        }}
-      >
-        <div
+    <div className="responsive-checked-card-container">
+      <div className="responsive-checked-card-left">
+        <Card
           style={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            flexDirection: "column",
+            flex: leftCardFlex,
+            gap: "8px",
+            minWidth: "260px",
+            width: "100%",
+            boxSizing: "border-box",
           }}
+          className="responsive-checked-card-left"
         >
-          <Title level={3} style={{ margin: 0 }}>
-            {title} ({selectedItems.length})
-          </Title>
-          <Button size="small" onClick={clearSelection}>
-            {clearButtonText}
-          </Button>
-        </div>
-
-        <Divider />
-        
-        {/* Seçili öğeleri listele */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-          {selectedItems.map((item) => (
-            <Tag 
-              key={item.id} 
-              closable 
-              onClose={() => handleSelection(item)}
-            >
-              {displayFunction(item)}
-            </Tag>
-          ))}
-        </div>
-      </Card>
-      
-      {/* Güncelleme formu kartı */}
-      {showUpdateForm && (
-        <Card
-          style={{ 
-            display: "flex", 
-            flexDirection: "column", 
-            flex: rightCardFlex 
-          }}
-        >
-          <Title level={3}>{updateFormTitle}</Title>
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleFinish}
-            style={{ 
-              display: "flex", 
-              flexDirection: "column", 
-              gap: "0px" 
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "8px",
             }}
           >
-            {renderFormRows()}
-            
-            <Button 
-              htmlType="submit" 
-              type="primary"
-              disabled={selectedItems.length === 0}
-            >
-              {updateButtonText}
+            <Title level={3} style={{ margin: 0, fontSize: "1.2rem" }}>
+              {title} ({selectedItems.length})
+            </Title>
+            <Button size="small" onClick={clearSelection}>
+              {clearButtonText}
             </Button>
-          </Form>
+          </div>
+
+          <Divider />
+
+          {/* Seçili öğeleri listele */}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "8px",
+              width: "100%",
+            }}
+          >
+            {selectedItems.map((item) => (
+              <Tag
+                key={item.id}
+                closable
+                onClose={() => handleSelection(item)}
+                style={{
+                  fontSize: "1rem",
+                  padding: "4px 8px",
+                  marginBottom: "4px",
+                }}
+              >
+                {displayFunction(item)}
+              </Tag>
+            ))}
+          </div>
         </Card>
+      </div>
+      {showUpdateForm && (
+        <div className="responsive-checked-card-right">
+          <Card
+            className="responsive-checked-card-right"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              flex: rightCardFlex,
+              minWidth: "260px",
+              width: "100%",
+              boxSizing: "border-box",
+              marginTop: "0px",
+            }}
+          >
+            <Title level={3} style={{ fontSize: "1.2rem" }}>{updateFormTitle}</Title>
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={handleFinish}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0px",
+                width: "100%",
+              }}
+            >
+              {renderFormRows()}
+
+              <Button
+                htmlType="submit"
+                type="primary"
+                disabled={selectedItems.length === 0}
+                style={{ marginTop: "16px", width: "100%" }}
+              >
+                {updateButtonText}
+              </Button>
+            </Form>
+          </Card>
+        </div>
       )}
+
+      {/* Responsive CSS */}
+      <style>
+        {`
+          .responsive-checked-card-container {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            min-width: 300px;
+          }
+          @media (max-width: 900px) {
+            .responsive-checked-card-container {
+              flex-direction: column !important;
+              gap: 16px !important;
+            }
+            .responsive-checked-card-left,
+            .responsive-checked-card-right {
+              width: 100% !important;
+              min-width: 0 !important;
+              box-sizing: border-box !important;
+            }
+          }
+          @media (max-width: 600px) {
+            .responsive-checked-card-left .ant-card,
+            .responsive-checked-card-right .ant-card {
+              min-width: 240px !important;
+              max-width: 100vw !important;
+              padding: 12px !important;
+              font-size: 13px !important;
+              box-sizing: border-box !important;
+              overflow-x: auto !important;
+            }
+            .responsive-checked-card-left,
+            .responsive-checked-card-right {
+              padding: 0 !important;
+            }
+            .responsive-form-row {
+              flex-direction: column !important;
+              gap: 8px !important;
+              width: 100% !important;
+              box-sizing: border-box !important;
+            }
+            .ant-form-item {
+              width: 100% !important;
+              min-width: 0 !important;
+              box-sizing: border-box !important;
+            }
+          }
+          @media (max-width: 420px) {
+            .responsive-checked-card-left .ant-card,
+            .responsive-checked-card-right .ant-card {
+              min-width: 400px !important;
+              padding: 8px !important;
+              font-size: 12px !important;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };

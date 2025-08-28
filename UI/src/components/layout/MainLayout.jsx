@@ -239,8 +239,10 @@ const MainLayout = ({ selectedTheme, setSelectedTheme }) => {
 
           <Card
             size="small"
+            className="main-header-card"
             style={{
-              height: "48px",
+              width: "40px",
+              height: "40px",
               borderRadius: borderRadiusLG,
               display: "flex",
               justifyContent: "flex-start",
@@ -256,7 +258,9 @@ const MainLayout = ({ selectedTheme, setSelectedTheme }) => {
             }}
           >
             <Breadcrumb
+              className="main-header-breadcrumb"
               style={{
+                minWidth: "200px",
                 margin: 0,
                 fontSize: "14px",
               }}
@@ -266,6 +270,7 @@ const MainLayout = ({ selectedTheme, setSelectedTheme }) => {
           </Card>
           <Button
             type="default"
+            className="main-header-btn"
             style={{
               display: "flex",
               justifySelf: "flex-end",
@@ -323,6 +328,28 @@ const MainLayout = ({ selectedTheme, setSelectedTheme }) => {
           Toyz Assemble ©{new Date().getFullYear()}
         </Footer>
       </Layout>
+      <style>
+        {`
+          @media (max-width: 600px) {
+            .main-header-btn {
+              min-width: 32px !important;
+              width: 32px !important;
+              height: 32px !important;
+              font-size: 16px !important;
+              padding: 0 !important;
+            }
+            .main-header-breadcrumb {
+              font-size: 12px !important;
+              max-width: 70vw !important;
+              overflow-x: auto !important;
+              white-space: nowrap !important;
+            }
+            .main-header-card {
+              padding: 0 4px !important;
+            }
+          }
+        `}
+      </style>
     </Layout>
   );
 };

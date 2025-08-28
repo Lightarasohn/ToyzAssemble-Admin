@@ -358,7 +358,11 @@ const ReusableTable = ({
         gap: "5px",
         justifyContent: "center",
         alignContent: "center",
+        width: "100%",
+        maxWidth: "1200px",
+        margin: "auto",
       }}
+      className="responsive-table-container"
     >
       {enableFilter ? (
         <div
@@ -576,7 +580,60 @@ const ReusableTable = ({
           ...pagination,
         }}
         size={size}
+        className="responsive-table"
       />
+      {/* Responsive CSS */}
+      <style>
+        {`
+          @media (max-width: 900px) {
+            .responsive-table-container {
+              max-width: 100vw !important;
+              padding: 0 !important;
+            }
+            .responsive-table .ant-table {
+              width: 100vw !important;
+              overflow-x: auto !important;
+            }
+            .responsive-table .ant-table-content {
+              overflow-x: auto !important;
+            }
+            .responsive-table .ant-table-thead > tr > th,
+            .responsive-table .ant-table-tbody > tr > td {
+              padding: 8px !important;
+              font-size: 13px !important;
+              white-space: normal !important;
+            }
+          }
+          @media (max-width: 600px) {
+            .responsive-table .ant-table-pagination {
+              flex-direction: row !important;
+              flex-wrap: wrap !important;
+              gap: 4px !important;
+              justify-content: center !important;
+              align-items: center !important;
+              overflow-x: auto !important;
+              width: 100% !important;
+            }
+            .responsive-table .ant-pagination {
+              width: 100% !important;
+              min-width: 240px !important;
+              font-size: 12px !important;
+            }
+          }
+          @media (max-width: 420px) {
+            .responsive-table .ant-table-thead > tr > th,
+            .responsive-table .ant-table-tbody > tr > td {
+              padding: 4px !important;
+              font-size: 11px !important;
+            }
+            .responsive-table .ant-btn {
+              min-width: 32px !important;
+              font-size: 11px !important;
+              padding: 0 4px !important;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };

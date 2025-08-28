@@ -79,7 +79,7 @@ const RandomToyMainPage = () => {
                       alignContent: "center",
                     }}
                   >
-                    <span>{item.package.name}</span>
+                    <span>{item.package.name} | ${item.package.price}</span>
                     <Button
                       type="primary"
                       onClick={() => handleRandomButton(item.package.id)}
