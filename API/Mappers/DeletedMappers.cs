@@ -9,14 +9,20 @@ namespace API.Mappers
 {
     public static class DeletedMappers
     {
-        public static DeletedAllDto ToDTO(List<Toy> toys, List<Package> packages, List<RarityType> rarityTypes, List<ToyType> toyTypes)
+        public static DeletedAllDto ToDTO(
+            List<Toy> toys,
+            List<Package> packages,
+            List<RarityType> rarityTypes,
+            List<ToyType> toyTypes,
+            List<PackageRarityType> packageRarityTypes)
         {
             return new DeletedAllDto
             {
                 Toys = toys,
                 ToyTypes = toyTypes,
                 RarityTypes = rarityTypes,
-                Packages = packages
+                Packages = packages,
+                PackageRarityTypes = packageRarityTypes
             };
         }
     }

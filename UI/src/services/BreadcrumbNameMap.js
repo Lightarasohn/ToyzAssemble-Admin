@@ -4,5 +4,6 @@ export const breadcrumbNameMap = {
   "/rarity-types": "Rarity Types",
   "/toy-types": "Toy Types",
   "/packages-rarities": "Packages-Rarities",
+  "/random-toy": "Random Toy",
   "/deleted": "Deleted",
 };

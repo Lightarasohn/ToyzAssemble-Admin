@@ -33,7 +33,7 @@ namespace API.Mappers
             };
         }
 
-        public static ToyRandomDto ToRandomDto(this Toy toy, ToyType toyType)
+        public static ToyRandomDto ToRandomDto(this Toy toy, ToyType toyType, RarityType rarityType)
         {
             return new ToyRandomDto
             {
@@ -45,7 +45,7 @@ namespace API.Mappers
                 RarityId = toy.RarityId,
                 Deleted = toy.Deleted,
                 ImageUrls = toy.ImageUrls,
-                Rarity = toy.Rarity,
+                Rarity = rarityType,
                 ToyType = toyType
             };
         }

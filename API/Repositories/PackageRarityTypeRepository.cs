@@ -33,7 +33,14 @@ namespace API.Repositories
             // Check if the combination already exists
             var existingPackageRarityType = await _context.PackageRarityTypes
                 .FirstOrDefaultAsync(pr => pr.PackageId == packageId &&
-                                          pr.RarityTypeId == rarityTypeId && !pr.Deleted);
+                                          pr.RarityTypeId == rarityTypeId);
+
+            if (existingPackageRarityType != null && existingPackageRarityType.Deleted)
+            {
+                existingPackageRarityType.Deleted = false;
+                await _context.SaveChangesAsync();
+                return existingPackageRarityType;
+            }
 
             if (existingPackageRarityType != null)
             {
@@ -66,10 +73,10 @@ namespace API.Repositories
 
         public async Task<bool> DeletePackageRarityTypesByPackageIdAsync(int packageId)
         {
-            var package = await _context.Packages.FirstOrDefaultAsync(x => x.Id == packageId && !x.Deleted)
+            var package = await _context.Packages.Include(p => p.PackageRarityTypes).FirstOrDefaultAsync(x => x.Id == packageId && !x.Deleted)
                 ?? throw new Exception($"Package with Id of ${packageId} was not found!");
 
-            var packageRarityTypes = await _context.PackageRarityTypes.ToListAsync();
+            var packageRarityTypes = package.PackageRarityTypes;
 
             foreach (var packageRarityType in packageRarityTypes)
             {

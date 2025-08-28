@@ -11,6 +11,6 @@ namespace API.Interfaces
     {
         Task<GiveawayPickedToyDto> PickToyFromPackageAsync(int packageId);
         PackageRarityType PickRarityTypeFromPackage(Package package);
-        Toy PickToyFromRarityType(RarityType rarityType);
+        Task<Toy> PickToyFromRarityType(RarityType rarityType);
     }
 }

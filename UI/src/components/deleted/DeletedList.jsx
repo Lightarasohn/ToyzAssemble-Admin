@@ -55,10 +55,14 @@ const DeletedList = ({
       }));
 
       const packageRarityTypes = data.packageRarityTypes.map(prt => ({
-        //todo
+        id: `${prt.packageId}|${prt.rarityTypeId}`,
+        name: `${prt.package.name}|${prt.rarityType.name}`,
+        type: "packages-RarityTypes",
+        displayType: "Package-Rarity",
+        object: prt
       }))
 
-      setDeletedList([...toys, ...packages, ...toyTypes, ...rarityTypes]);
+      setDeletedList([...toys, ...packages, ...toyTypes, ...rarityTypes, ...packageRarityTypes]);
       
     } catch (err) {
       console.error(err);

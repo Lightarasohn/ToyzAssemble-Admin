@@ -132,8 +132,8 @@ const PackageMainPage = () => {
 
   const handleDelete = async (record) => {
     try {
-      await DeletePackageAPI(record.id);
       await DeleteAllPackageRaritiesByPackageIdAPI(record.id);
+      await DeletePackageAPI(record.id);
       setIsFetchList(true);
       // If the editing toy is deleted, exit edit mode
       if (editingItem && editingItem.id === record.id) {

@@ -199,7 +199,7 @@ const PackagesRaritiesMainPage = () => {
       await DeletePackageRarityAPI(apiVal);
       setIsFetchList(true);
       // If the editing toy is deleted, exit edit mode
-      if (editingToy && editingToy.id === record.id) {
+      if (editingItem && editingItem.packageId == record.packageId && editingItem.rarityTypeId == record.rarityTypeId) {
         handleEditButton(null);
       }
       notification.success({

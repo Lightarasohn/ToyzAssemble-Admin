@@ -15,15 +15,15 @@ const RandomToyMainPage = () => {
 
         const resolvedPackages = await Promise.all(
           fetchedPackages.map(async (data) => {
-            const packageRarities = await GetAllPackageRaritiesByPackageIdAPI(
-              data.id
-            );
+            const packageRarities = data.packageRarityTypes;
             return {
               package: data,
-              rarities: packageRarities.map((item) => ({
-                rarity: item.rarityType,
-                ratio: item.ratio,
-              })),
+              rarities: packageRarities
+                .filter((item) => !item.deleted)
+                .map((item) => ({
+                  rarity: item.rarityType,
+                  ratio: item.ratio,
+                })),
             };
           })
         );
@@ -42,17 +42,13 @@ const RandomToyMainPage = () => {
     setPickedToy(toy);
   };
 
-  useEffect(() => {
-    console.log("picked toy:", pickedToy);
-  },[pickedToy])
-
   return (
     <div
       style={{
-        display:"flex",
-        flexDirection:"column",
-        justifyContent:"center",
-        alignContent:"flex-start"
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignContent: "flex-start",
       }}
     >
       <List
@@ -104,25 +100,53 @@ const RandomToyMainPage = () => {
           );
         }}
       />
-      {pickedToy != null ? 
-        <Card title={pickedToy.toy.name}
+      {pickedToy != null ? (
+        <Card
+          title={pickedToy.toy.name}
           style={{
-            display:"flex",
-            flexDirection:"column",
-            justifyContent:"center",
-            alignContent:"center",
-            gap:"16px"
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignContent: "center",
+            gap: "16px",
           }}
         >
           <Carousel
-          style={{ display: "flex", width: "300px", gap:"16px", justifySelf:"center", alignSelf:"center" }}
-          arrows
-          infinite={false}
-        >
-          {pickedToy.toy.imageUrls && pickedToy.toy.imageUrls.length > 0 ? (
-            pickedToy.toy.imageUrls.map((img, idx) => (
+            style={{
+              display: "flex",
+              width: "300px",
+              gap: "16px",
+              justifySelf: "center",
+              alignSelf: "center",
+            }}
+            arrows
+            infinite={false}
+          >
+            {pickedToy.toy.imageUrls && pickedToy.toy.imageUrls.length > 0 ? (
+              pickedToy.toy.imageUrls.map((img, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "300px",
+                  }}
+                >
+                  <img
+                    src={img}
+                    alt={`${pickedToy.toy.name.toLowerCase()}-${idx}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      border: "1px solid red", // debug için kutu çiz
+                    }}
+                  />
+                </div>
+              ))
+            ) : (
               <div
-                key={idx}
                 style={{
                   display: "flex",
                   justifyContent: "center",
@@ -130,47 +154,28 @@ const RandomToyMainPage = () => {
                   height: "300px",
                 }}
               >
-                <img
-                  src={img}
-                  alt={`${pickedToy.toy.name.toLowerCase()}-${idx}`}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "contain",
-                    border: "1px solid red", // debug için kutu çiz
-                  }}
-                />
+                <Typography.Text type="secondary">
+                  No Images To Display
+                </Typography.Text>
               </div>
-            ))
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "300px",
-              }}
-            >
-              <Typography.Text type="secondary">No Images To Display</Typography.Text>
-            </div>
-          )}
-        </Carousel>
-        <div
-          style={{
-            display:"flex",
-            flexDirection:"row",
-            maxLines:3,
-            gap:"16px"
-          }}
-        >
-          <Card>Id: {pickedToy.toy.id}</Card>
-          <Card>Price: ${pickedToy.toy.price}</Card>
-          <Card>Rarity: {pickedToy.toy.rarity.name}</Card>
-          <Card>Toy Type: {pickedToy.toy.toyType.name}</Card>
-          <Card>Probability: {pickedToy.probability}%</Card>
-        </div>
+            )}
+          </Carousel>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              maxLines: 3,
+              gap: "16px",
+            }}
+          >
+            <Card>Id: {pickedToy.toy.id}</Card>
+            <Card>Price: ${pickedToy.toy.price}</Card>
+            <Card>Rarity: {pickedToy.toy.rarity.name}</Card>
+            <Card>Toy Type: {pickedToy.toy.toyType.name}</Card>
+            <Card>Probability: {pickedToy.probability}%</Card>
+          </div>
         </Card>
-      : null}
+      ) : null}
     </div>
   );
 };

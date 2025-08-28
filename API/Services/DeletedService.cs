@@ -25,7 +25,13 @@ namespace API.Services
             var deletedPackages = await GetAllDeletedPackages();
             var deletedRarityTypes = await GetAllDeletedRarityTypes();
             var deletedToyTypes = await GetAllDeletedToyTypes();
-            var allDeletedDto = DeletedMappers.ToDTO(deletedToys, deletedPackages, deletedRarityTypes, deletedToyTypes);
+            var deletedPackageRarityTypes = await GetAllDeletedPackageRarityTypes();
+            var allDeletedDto = DeletedMappers.ToDTO(
+                                              deletedToys,
+                                              deletedPackages,
+                                              deletedRarityTypes,
+                                              deletedToyTypes,
+                                              deletedPackageRarityTypes);
             return allDeletedDto;
         }
 
@@ -49,6 +55,16 @@ namespace API.Services
             return await _context.RarityTypes.AsNoTracking().Where(rt => rt.Deleted).ToListAsync();
         }
 
+        private async Task<List<PackageRarityType>> GetAllDeletedPackageRarityTypes()
+        {
+            return await _context.PackageRarityTypes
+                    .AsNoTracking()
+                    .Include(prt => prt.Package)
+                    .Include(prt => prt.RarityType)
+                    .Where(prt => prt.Deleted)
+                    .ToListAsync();
+        }
+
         public async Task<bool> UnDeleteAsync(UnDeleteDTO unDeleteDTO)
         {
             switch (unDeleteDTO.TableName.ToLower())
@@ -65,10 +81,15 @@ namespace API.Services
                 case "packages":
                     {
                         var package = await _context.Packages
+                            .Include(p => p.PackageRarityTypes)
                             .FirstOrDefaultAsync(p => p.Id == unDeleteDTO.Id)
                             ?? throw new InvalidOperationException($"Package with Id {unDeleteDTO.Id} not found");
 
                         package.Deleted = false;
+                        foreach (var prt in package.PackageRarityTypes)
+                        {
+                            prt.Deleted = false;
+                        }
                         break;
                     }
                 case "raritytypes":
@@ -96,6 +117,8 @@ namespace API.Services
                             prt.PackageId == unDeleteDTO.PackageRarityTypeDto.PackageId &&
                             prt.RarityTypeId == unDeleteDTO.PackageRarityTypeDto.RarityTypeId)
                             ?? throw new InvalidOperationException($"PackageRarityType with packageId {unDeleteDTO.PackageRarityTypeDto.PackageId} and rarityTypeId {unDeleteDTO.PackageRarityTypeDto.RarityTypeId} not found");
+
+                        packagesRarityTypes.Deleted = false;
                         break;
                     }
                 default:

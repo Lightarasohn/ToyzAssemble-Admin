@@ -13,10 +13,29 @@ const DeletedMainPage = () => {
 
   const handleDelete = async (record) => {
     try {
-      const apiVal = {
-        tableName: record.type,
-        id: record.id
+      let apiVal = {};
+      
+      // Fix: Use toLowerCase() instead of ToLower(), and match backend case name
+      if (record.type.toLowerCase() === "packages-raritytypes") {
+        apiVal = {
+          tableName: record.type,
+          id: 0, // Backend expects int, not null - use 0 or remove this property
+          packageRarityTypeDto: {
+            packageId: parseInt(record.id.split("|")[0]), // Ensure it's a number
+            rarityTypeId: parseInt(record.id.split("|")[1]), // Ensure it's a number
+          },
+        };
+      } else {
+        apiVal = {
+          tableName: record.type, // Fix: Use tableName instead of type
+          id: parseInt(record.id), // Ensure it's a number
+          packageRarityTypeDto: {
+            packageId: 0,
+            rarityTypeId: 0
+          }
+        };
       }
+
       await UnDeleteAPI(apiVal);
       setIsFetchList(true);
       notification.success({
@@ -27,7 +46,8 @@ const DeletedMainPage = () => {
         pauseOnHover: true,
         placement: "topRight",
       });
-    } catch {
+    } catch (error) {
+      console.error("Error undeleting record:", error);
       notification.error({
         message: "Error",
         description: "Could not be Undeleted!",
